@@ -1,0 +1,63 @@
+# ---------------------------------------------------------------
+# Python / tooling
+# ---------------------------------------------------------------
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ipynb_checkpoints/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# Editors / OS
+.vscode/
+.idea/
+*.swp
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Office lock files (report.docx open in Word)
+~$*
+
+# Local secrets (never commit)
+.env
+*.key
+*.pem
+
+# Node (only used to build report.docx)
+node_modules/
+
+# ---------------------------------------------------------------
+# Datasets: 52 GB of PCAP/CSV, downloaded separately (see README)
+# ---------------------------------------------------------------
+datasets/
+dataset/
+*.pcap
+*.pcapng
+*.cap
+
+# ---------------------------------------------------------------
+# Generated data: reproducible with the commands in README
+# ---------------------------------------------------------------
+processed/*
+!processed/.gitkeep
+
+# Trained models / fitted preprocessors (pickles, regenerate them).
+# The small *.schema.json files are kept so the feature layout is reviewable.
+saved_models/**
+!saved_models/
+!saved_models/.gitkeep
+!saved_models/*/
+!saved_models/**/*.schema.json
+
+# Outputs: logs and alerts are local; EDA charts and validation reports
+# are small and referenced by README / report, so they are tracked.
+outputs/logs/*
+outputs/alerts/*
+!outputs/*/.gitkeep

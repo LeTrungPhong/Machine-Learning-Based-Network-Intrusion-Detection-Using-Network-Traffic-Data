@@ -1,0 +1,222 @@
+# =============================================================================
+# Network Intrusion Detection System - central configuration
+# All relative paths are resolved against the project root (the folder that
+# contains main.py). Every module reads its settings from this file.
+# =============================================================================
+
+project:
+  name: "Machine Learning-Based Network Intrusion Detection Using Network Traffic Data"
+  random_seed: 42
+
+paths:
+  datasets_dir: "datasets"
+  processed_dir: "processed"        # extracted packets / flows / host features (Parquet)
+  outputs_dir: "outputs"            # figures, tables, reports
+  eda_dir: "outputs/eda"
+  logs_dir: "outputs/logs"
+  alerts_dir: "outputs/alerts"
+  saved_models_dir: "saved_models"
+
+storage:
+  # Writes that would leave less than this much free space are refused.
+  min_free_gb: 2.0
+  # Below this a warning is logged before long-running jobs.
+  warn_free_gb: 10.0
+
+logging:
+  level: "INFO"
+  file: "nids.log"                  # created inside paths.logs_dir
+  max_bytes: 10485760               # 10 MB per log file
+  backup_count: 5
+
+# -----------------------------------------------------------------------------
+# Datasets
+# -----------------------------------------------------------------------------
+datasets:
+  cicids2017:
+    root: "datasets/CIC-IDS-2017"
+    source: "HuggingFace mirror bencorn/CICIDS2017 (original: https://www.unb.ca/cic/datasets/ids-2017.html)"
+    # Files ship with a .pcap extension but are pcapng (magic 0x0A0D0D0A).
+    pcap_dir: "pcaps"
+    csv_ml_dir: "csvs/MachineLearningCSV/MachineLearningCVE"        # 79 columns, no IP/port/timestamp
+    csv_labelled_dir: "csvs/GeneratedLabelledFlows/TrafficLabelling" # 85 columns, includes Flow ID/IPs/Timestamp
+    csv_encoding: "latin-1"         # Web Attack labels contain byte 0x96 (cp1252 en dash)
+    # CSV 'Timestamp' is local capture time (d/m/Y H:M, minute resolution).
+    # Observed: first packet of Friday pcap 11:59 UTC vs CSV 8:59 -> UTC-3 (ADT).
+    csv_timezone: "America/Moncton"
+    csv_timestamp_dayfirst: true
+    label_column: "Label"
+    benign_label: "BENIGN"
+    # Raw labels are stripped and 0x96 is replaced by '-' before this optional
+    # renaming map is applied (e.g. to merge rare classes in later phases).
+    label_aliases: {}
+    # Attack families (used for grouped analysis and to pool very rare classes).
+    label_groups:
+      BENIGN: "BENIGN"
+      "DoS Hulk": "DoS"
+      "DoS GoldenEye": "DoS"
+      "DoS slowloris": "DoS"
+      "DoS Slowhttptest": "DoS"
+      DDoS: "DDoS"
+      PortScan: "PortScan"
+      "FTP-Patator": "BruteForce"
+      "SSH-Patator": "BruteForce"
+      "Web Attack - Brute Force": "WebAttack"
+      "Web Attack - XSS": "WebAttack"
+      "Web Attack - Sql Injection": "WebAttack"
+      Bot: "Bot"
+      Infiltration: "Infiltration"
+      Heartbleed: "Heartbleed"
+    clean_output: "processed/cic/cicids2017_clean.parquet"
+    cleaning_report: "outputs/eda/cleaning_report.json"
+    # Capture day of each file; used for time/capture-based splits.
+    days:
+      Monday: ["Monday-WorkingHours"]
+      Tuesday: ["Tuesday-WorkingHours"]
+      Wednesday: ["Wednesday-workingHours"]
+      Thursday: ["Thursday-WorkingHours-Morning-WebAttacks", "Thursday-WorkingHours-Afternoon-Infilteration"]
+      Friday: ["Friday-WorkingHours-Morning", "Friday-WorkingHours-Afternoon-PortScan", "Friday-WorkingHours-Afternoon-DDos"]
+    # Expected files and byte sizes, measured on 2026-10-30 from the downloaded copy.
+    expected_files:
+      "pcaps/Monday-WorkingHours.pcap": 10822507416
+      "pcaps/Tuesday-WorkingHours.pcap": 11048283608
+      "pcaps/Wednesday-workingHours.pcap": 13420789612
+      "pcaps/Thursday-WorkingHours.pcap": 8302500180
+      "pcaps/Friday-WorkingHours.pcap": 8839309056
+      "csvs/MachineLearningCSV/MachineLearningCVE/Monday-WorkingHours.pcap_ISCX.csv": 176927918
+      "csvs/MachineLearningCSV/MachineLearningCVE/Tuesday-WorkingHours.pcap_ISCX.csv": 135078995
+      "csvs/MachineLearningCSV/MachineLearningCVE/Wednesday-workingHours.pcap_ISCX.csv": 225166395
+      "csvs/MachineLearningCSV/MachineLearningCVE/Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.csv": 52023263
+      "csvs/MachineLearningCSV/MachineLearningCVE/Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.csv": 83102436
+      "csvs/MachineLearningCSV/MachineLearningCVE/Friday-WorkingHours-Morning.pcap_ISCX.csv": 58316725
+      "csvs/MachineLearningCSV/MachineLearningCVE/Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv": 76906168
+      "csvs/MachineLearningCSV/MachineLearningCVE/Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv": 77123859
+      "csvs/GeneratedLabelledFlows/TrafficLabelling/Monday-WorkingHours.pcap_ISCX.csv": 268649908
+      "csvs/GeneratedLabelledFlows/TrafficLabelling/Tuesday-WorkingHours.pcap_ISCX.csv": 174696560
+      "csvs/GeneratedLabelledFlows/TrafficLabelling/Wednesday-workingHours.pcap_ISCX.csv": 285642925
+      "csvs/GeneratedLabelledFlows/TrafficLabelling/Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.csv": 92030223
+      "csvs/GeneratedLabelledFlows/TrafficLabelling/Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.csv": 108723183
+      "csvs/GeneratedLabelledFlows/TrafficLabelling/Friday-WorkingHours-Morning.pcap_ISCX.csv": 75386737
+      "csvs/GeneratedLabelledFlows/TrafficLabelling/Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv": 101874777
+      "csvs/GeneratedLabelledFlows/TrafficLabelling/Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv": 96101069
+
+  ctu13:
+    root: "datasets/CTU-13"
+    source: "https://www.stratosphereips.org/datasets-ctu13"
+    # Not downloaded yet. Expected layout: <root>/<scenario 1..13>/*.binetflow
+    binetflow_glob: "*/*.binetflow"
+    expected_files: {}
+
+# -----------------------------------------------------------------------------
+# Phase 1 - PCAP processing
+# -----------------------------------------------------------------------------
+pcap:
+  reader: "scapy"                   # streaming PcapReader / PcapNgReader, never rdpcap on large files
+  sample_max_packets: 200000        # cap used for quick tests on real captures
+  chunk_rows: 500000                # rows per Parquet write
+  # Packet-level CSV is ~10x larger than Parquet and halves throughput
+  # (measured on 200k CIC Friday frames: 28.1 MB vs 2.8 MB); request it with
+  # --formats parquet csv for samples. Flow-level outputs default to both.
+  export_formats: ["parquet"]
+  # Used only to estimate output size for the free-space guard.
+  estimated_capture_bytes_per_packet: 600
+  estimated_output_bytes_per_packet: 150
+
+flow:
+  # Semantics follow CICFlowMeter (used to build CIC-IDS-2017):
+  #   flow_timeout_s     - maximum flow duration; a packet arriving later than this
+  #                        after the flow start begins a new flow (CIC: 120 s)
+  #   activity_timeout_s - gap that splits a flow into active/idle periods for the
+  #                        Active*/Idle* statistics (CIC: 5 s)
+  # idle_timeout_s closes flows with no packets for this long. Keeping it equal
+  # to flow_timeout_s reproduces CIC behaviour; lower it to save memory live.
+  flow_timeout_s: 120.0
+  idle_timeout_s: 120.0
+  activity_timeout_s: 5.0
+  # After FIN in both directions or RST, packets of the same 5-tuple arriving
+  # within this grace period (e.g. the final ACK) stay in the flow instead of
+  # opening a new one (avoids the "TCP appendix" artefact in CIC-IDS-2017).
+  tcp_close_grace_s: 1.0
+  # Drop a packet identical to the previous one of the same flow (same direction,
+  # lengths, flags, TTL) within this many microseconds. 0 = keep all packets,
+  # as CICFlowMeter did. ~9% of packets in a Friday sample were such copies.
+  dedup_window_us: 0
+  # The capture sometimes timestamps a reply (SYN|ACK or RST|ACK) a few us
+  # *before* the SYN that caused it (seen in the Friday PortScan). If a flow
+  # holds only such a reply and the opposite side's SYN arrives within this
+  # window, the SYN sender becomes the initiator instead of opening a 2nd flow.
+  reorder_window_us: 1000
+  sweep_interval_s: 1.0             # how often (capture time) timed-out flows are flushed
+  max_active_flows: 500000          # oldest flows are evicted beyond this (flagged incomplete)
+  export_formats: ["parquet", "csv"]
+  chunk_rows: 200000
+
+# -----------------------------------------------------------------------------
+# Phase 2 - host-level features
+# -----------------------------------------------------------------------------
+host_features:
+  window_s: 60.0
+  step_s: 10.0
+  portscan:
+    min_unique_dst_ports: 50        # vertical scan
+    min_unique_dst_ips: 20          # horizontal scan, only together with:
+    min_failed_ratio: 0.5           # share of the host's TCP flows that failed in the window
+  beaconing:
+    min_connections: 6
+    max_interval_cv: 0.2            # coefficient of variation of inter-connection intervals
+
+# -----------------------------------------------------------------------------
+# Phase 4 - preprocessing
+# -----------------------------------------------------------------------------
+preprocessing:
+  # Split strategies (all computed by preprocessing/preprocess.py):
+  #   temporal_per_class - per label, earliest flows -> train, later -> val, latest -> test.
+  #                        Every class is present in every split; test is always "future".
+  #   by_day             - train_days vs test_days; test contains attack types never seen
+  #                        in training (used for anomaly / unseen-attack evaluation).
+  #   stratified_random  - random stratified split; reported only as an optimistic baseline.
+  splits:
+    classification: "temporal_per_class"
+    anomaly: "by_day"
+  train_days: ["Monday", "Tuesday", "Wednesday"]
+  test_days: ["Thursday", "Friday"]
+  val_fraction: 0.15                # share of all rows (per class for temporal_per_class)
+  test_fraction: 0.20
+  scaler: "robust"                  # robust | standard
+  log_transform: true               # sign(x) * log1p(|x|) before scaling (heavy-tailed features)
+  correlation_threshold: 0.99       # drop one of each |Pearson r| > threshold pair (train only); null = off
+  correlation_sample_rows: 300000
+  top_k_ports: 32                   # most frequent training dst ports one-hot encoded, rest -> "infrequent"
+  imbalance: "class_weight"         # none | class_weight | smote (training split only)
+  smote_max_per_class: 50000
+  float_dtype: "float32"
+  splits_dir: "processed/splits"
+  preprocessors_dir: "saved_models/preprocessing"
+  eda_sample_rows: 300000
+
+# -----------------------------------------------------------------------------
+# Phase 5-8 - models (filled in during the corresponding steps)
+# -----------------------------------------------------------------------------
+models:
+  gaussian: {}
+  isolation_forest: {}
+  autoencoder: {}
+  vae: {}
+  random_forest: {}
+  xgboost: {}
+  botnet_graph: {}
+
+# -----------------------------------------------------------------------------
+# Phase 9 - real-time detection
+# -----------------------------------------------------------------------------
+realtime:
+  interface: "eth0"
+  bpf_filter: "ip"
+  # Flow settings (timeouts, grace, dedup) come from the `flow` section so the
+  # live feature schema matches training; these only override memory limits.
+  window_s: 60.0
+  flush_interval_s: 5.0
+  max_active_flows: 200000
+  alert_log: "alerts.jsonl"         # created inside paths.alerts_dir
+  anomaly_threshold: null           # loaded with the trained model when null
+  block_ips: false                  # never block automatically

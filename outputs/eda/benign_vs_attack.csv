@@ -1,0 +1,13 @@
+feature,class,median,q1,q3,n
+flow_duration,BENIGN,46323.0,208.0,1139769.0,29997
+flow_duration,Attack,5.243304e+06,192.0,82587168.0,124177
+total_fwd_packets,BENIGN,2.0,1.0,4.0,30000
+total_fwd_packets,Attack,4.0,1.0,7.0,124177
+total_length_of_fwd_packets,BENIGN,68.0,18.0,247.0,30000
+total_length_of_fwd_packets,Attack,26.0,2.0,344.0,124177
+fwd_packet_length_max,BENIGN,41.0,6.0,112.25,30000
+fwd_packet_length_max,Attack,20.0,2.0,326.0,124177
+flow_bytes_s,BENIGN,4205.5137,105.49072265625,135353.296875,29982
+flow_bytes_s,Attack,339.91275,62.328895568847656,86956.5234375,124117
+init_win_bytes_backward,BENIGN,-1.0,-1.0,253.0,30000
+init_win_bytes_backward,Attack,229.0,0.0,235.0,124177

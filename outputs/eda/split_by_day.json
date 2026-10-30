@@ -1,0 +1,100 @@
+{
+  "strategy": "by_day",
+  "fit_on": "benign",
+  "split_file": "E:\\ATTT_Project\\processed\\splits\\cicids2017_by_day.parquet",
+  "preprocessor": "E:\\ATTT_Project\\saved_models\\preprocessing\\cicids2017_by_day_benign.joblib",
+  "n_numeric_in": 68,
+  "dropped_correlated": [
+    "flow_iat_mean",
+    "flow_iat_max",
+    "fwd_iat_mean",
+    "fwd_iat_max",
+    "bwd_iat_mean",
+    "bwd_iat_max",
+    "fwd_packets_s",
+    "min_packet_length",
+    "packet_length_variance",
+    "syn_flag_count",
+    "ece_flag_count",
+    "average_packet_size",
+    "avg_fwd_segment_size",
+    "avg_bwd_segment_size",
+    "subflow_fwd_packets",
+    "subflow_fwd_bytes",
+    "subflow_bwd_packets",
+    "subflow_bwd_bytes",
+    "active_max",
+    "active_min",
+    "idle_max",
+    "idle_min"
+  ],
+  "n_output_features": 82,
+  "class_weights_train": {
+    "BENIGN": 0.19757312792197973,
+    "DoS Hulk": 1.1875135375570511,
+    "DoS Slowhttptest": 39.150694975771486,
+    "DoS slowloris": 38.12252436828708,
+    "FTP-Patator": 34.49853924377774,
+    "SSH-Patator": 63.5849124987056
+  },
+  "splits": {
+    "train": {
+      "rows": 1228079,
+      "labels": {
+        "BENIGN": 1035970,
+        "DoS Hulk": 172360,
+        "FTP-Patator": 5933,
+        "DoS slowloris": 5369,
+        "DoS Slowhttptest": 5228,
+        "SSH-Patator": 3219
+      },
+      "time_utc": [
+        "2017-07-03 11:55:58+00:00",
+        "2017-07-05 14:00:00+00:00"
+      ],
+      "days": [
+        "Monday",
+        "Tuesday",
+        "Wednesday"
+      ]
+    },
+    "val": {
+      "rows": 283403,
+      "labels": {
+        "BENIGN": 272768,
+        "DoS GoldenEye": 10282,
+        "DoS Hulk": 339,
+        "Heartbleed": 11,
+        "DoS slowloris": 3
+      },
+      "time_utc": [
+        "2017-07-05 14:00:00+00:00",
+        "2017-07-05 20:10:00+00:00"
+      ],
+      "days": [
+        "Wednesday"
+      ]
+    },
+    "test": {
+      "rows": 986621,
+      "labels": {
+        "BENIGN": 764221,
+        "DDoS": 128013,
+        "PortScan": 90255,
+        "Bot": 1953,
+        "Web Attack - Brute Force": 1470,
+        "Web Attack - XSS": 652,
+        "Infiltration": 36,
+        "Web Attack - Sql Injection": 21
+      },
+      "time_utc": [
+        "2017-07-06 11:59:00+00:00",
+        "2017-07-07 20:02:00+00:00"
+      ],
+      "days": [
+        "Friday",
+        "Thursday"
+      ]
+    }
+  }
+}

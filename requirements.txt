@@ -1,0 +1,37 @@
+# Python 3.12. Versions verified together with `pip check` on Windows 11 (2026-10-30).
+# PyTorch is installed from the CPU-only index (no CUDA GPU on the dev machine);
+# on Kali the same line pulls the CPU wheel and avoids the multi-GB CUDA build.
+--extra-index-url https://download.pytorch.org/whl/cpu
+
+# Data handling
+numpy==2.5.4
+pandas==3.1.0
+pyarrow==26.0.0
+scipy==1.18.1
+
+# Machine learning
+scikit-learn==1.9.1
+imbalanced-learn==0.14.2
+xgboost==3.4.1
+torch==2.15.0
+
+# Packet capture / graphs
+scapy==2.8.0
+networkx==3.7
+
+# Visualisation
+matplotlib==3.11.2
+seaborn==0.13.2
+
+# Utilities
+joblib==1.6.0
+PyYAML==6.0.3
+psutil==7.2.2
+tqdm==4.70.1
+
+# Testing and notebooks
+pytest==9.2.0
+ipykernel==7.4.0
+nbformat==5.11.1
+nbconvert==7.17.2
+nbclient==0.11.0

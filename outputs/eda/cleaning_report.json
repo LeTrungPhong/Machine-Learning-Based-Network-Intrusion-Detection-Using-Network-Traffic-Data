@@ -1,0 +1,483 @@
+{
+  "source": "E:\\ATTT_Project\\datasets\\CIC-IDS-2017\\csvs\\GeneratedLabelledFlows\\TrafficLabelling",
+  "output": "E:\\ATTT_Project\\processed\\cic\\cicids2017_clean.parquet",
+  "rows_read": 2830743,
+  "exact_duplicates_dropped": 331202,
+  "conflicting_duplicate_rows": 7144,
+  "conflicting_rows_by_label": {
+    "DoS Hulk": 5317,
+    "PortScan": 1053,
+    "BENIGN": 766,
+    "DDoS": 6,
+    "DoS slowloris": 2
+  },
+  "conflicting_dropped": true,
+  "rows_written": 2498103,
+  "constant_features_dropped": [
+    "bwd_avg_bulk_rate",
+    "bwd_avg_bytes_bulk",
+    "bwd_avg_packets_bulk",
+    "bwd_psh_flags",
+    "bwd_urg_flags",
+    "fwd_avg_bulk_rate",
+    "fwd_avg_bytes_bulk",
+    "fwd_avg_packets_bulk"
+  ],
+  "features_kept": [
+    "flow_duration",
+    "total_fwd_packets",
+    "total_backward_packets",
+    "total_length_of_fwd_packets",
+    "total_length_of_bwd_packets",
+    "fwd_packet_length_max",
+    "fwd_packet_length_min",
+    "fwd_packet_length_mean",
+    "fwd_packet_length_std",
+    "bwd_packet_length_max",
+    "bwd_packet_length_min",
+    "bwd_packet_length_mean",
+    "bwd_packet_length_std",
+    "flow_bytes_s",
+    "flow_packets_s",
+    "flow_iat_mean",
+    "flow_iat_std",
+    "flow_iat_max",
+    "flow_iat_min",
+    "fwd_iat_total",
+    "fwd_iat_mean",
+    "fwd_iat_std",
+    "fwd_iat_max",
+    "fwd_iat_min",
+    "bwd_iat_total",
+    "bwd_iat_mean",
+    "bwd_iat_std",
+    "bwd_iat_max",
+    "bwd_iat_min",
+    "fwd_psh_flags",
+    "fwd_urg_flags",
+    "fwd_header_length",
+    "bwd_header_length",
+    "fwd_packets_s",
+    "bwd_packets_s",
+    "min_packet_length",
+    "max_packet_length",
+    "packet_length_mean",
+    "packet_length_std",
+    "packet_length_variance",
+    "fin_flag_count",
+    "syn_flag_count",
+    "rst_flag_count",
+    "psh_flag_count",
+    "ack_flag_count",
+    "urg_flag_count",
+    "cwe_flag_count",
+    "ece_flag_count",
+    "down_up_ratio",
+    "average_packet_size",
+    "avg_fwd_segment_size",
+    "avg_bwd_segment_size",
+    "subflow_fwd_packets",
+    "subflow_fwd_bytes",
+    "subflow_bwd_packets",
+    "subflow_bwd_bytes",
+    "init_win_bytes_forward",
+    "init_win_bytes_backward",
+    "act_data_pkt_fwd",
+    "min_seg_size_forward",
+    "active_mean",
+    "active_std",
+    "active_max",
+    "active_min",
+    "idle_mean",
+    "idle_std",
+    "idle_max",
+    "idle_min"
+  ],
+  "categorical_inputs": [
+    "dst_port",
+    "protocol"
+  ],
+  "nan_by_feature": {
+    "Flow Bytes/s": 1358
+  },
+  "inf_by_feature": {
+    "Flow Packets/s": 2867,
+    "Flow Bytes/s": 1509
+  },
+  "negative_by_feature": {
+    "Init_Win_bytes_backward": 1441552,
+    "Init_Win_bytes_forward": 1001189,
+    "Flow IAT Min": 2891,
+    "Flow Duration": 115,
+    "Flow Packets/s": 115,
+    "Flow IAT Mean": 115,
+    "Flow IAT Max": 115,
+    "Flow Bytes/s": 85,
+    "Fwd Header Length": 35,
+    "Fwd Header Length.1": 35,
+    "min_seg_size_forward": 35,
+    "Bwd Header Length": 22,
+    "Fwd IAT Min": 17
+  },
+  "negative_set_nan_by_feature": {
+    "Flow IAT Min": 2891,
+    "Flow Duration": 115,
+    "Flow Packets/s": 115,
+    "Flow IAT Mean": 115,
+    "Flow IAT Max": 115,
+    "Flow Bytes/s": 85,
+    "Fwd Header Length": 35,
+    "Fwd Header Length.1": 35,
+    "min_seg_size_forward": 35,
+    "Bwd Header Length": 22,
+    "Fwd IAT Min": 17
+  },
+  "non_numeric_by_feature": {},
+  "labels_before": {
+    "BENIGN": 2273097,
+    "DoS Hulk": 231073,
+    "PortScan": 158930,
+    "DDoS": 128027,
+    "DoS GoldenEye": 10293,
+    "FTP-Patator": 7938,
+    "SSH-Patator": 5897,
+    "DoS slowloris": 5796,
+    "DoS Slowhttptest": 5499,
+    "Bot": 1966,
+    "Web Attack - Brute Force": 1507,
+    "Web Attack - XSS": 652,
+    "Infiltration": 36,
+    "Web Attack - Sql Injection": 21,
+    "Heartbleed": 11
+  },
+  "labels_after": {
+    "BENIGN": 2072959,
+    "DoS Hulk": 172699,
+    "DDoS": 128013,
+    "PortScan": 90255,
+    "DoS GoldenEye": 10282,
+    "FTP-Patator": 5933,
+    "DoS slowloris": 5372,
+    "DoS Slowhttptest": 5228,
+    "SSH-Patator": 3219,
+    "Bot": 1953,
+    "Web Attack - Brute Force": 1470,
+    "Web Attack - XSS": 652,
+    "Infiltration": 36,
+    "Web Attack - Sql Injection": 21,
+    "Heartbleed": 11
+  },
+  "per_file": {
+    "Monday-WorkingHours": {
+      "rows": 529918,
+      "non_numeric": {},
+      "nan": {
+        "Flow Bytes/s": 64
+      },
+      "inf": {
+        "Flow Bytes/s": 373,
+        "Flow Packets/s": 437
+      },
+      "negative": {
+        "Flow Duration": 15,
+        "Flow Bytes/s": 9,
+        "Flow Packets/s": 15,
+        "Flow IAT Mean": 15,
+        "Flow IAT Max": 15,
+        "Flow IAT Min": 512,
+        "Fwd Header Length": 23,
+        "Bwd Header Length": 17,
+        "Fwd Header Length.1": 23,
+        "Init_Win_bytes_forward": 224495,
+        "Init_Win_bytes_backward": 299094,
+        "min_seg_size_forward": 23
+      },
+      "negative_set_nan": {
+        "Flow Duration": 15,
+        "Flow Bytes/s": 9,
+        "Flow Packets/s": 15,
+        "Flow IAT Mean": 15,
+        "Flow IAT Max": 15,
+        "Flow IAT Min": 512,
+        "Fwd Header Length": 23,
+        "Bwd Header Length": 17,
+        "Fwd Header Length.1": 23,
+        "min_seg_size_forward": 23
+      },
+      "fwd_header_length_1_identical": true,
+      "timestamp_unparsed": 0,
+      "labels": {
+        "BENIGN": 529918
+      }
+    },
+    "Tuesday-WorkingHours": {
+      "rows": 445909,
+      "non_numeric": {},
+      "nan": {
+        "Flow Bytes/s": 201
+      },
+      "inf": {
+        "Flow Bytes/s": 63,
+        "Flow Packets/s": 264
+      },
+      "negative": {
+        "Flow Duration": 17,
+        "Flow Packets/s": 17,
+        "Flow IAT Mean": 17,
+        "Flow IAT Max": 17,
+        "Flow IAT Min": 505,
+        "Fwd Header Length": 11,
+        "Bwd Header Length": 5,
+        "Fwd Header Length.1": 11,
+        "Init_Win_bytes_forward": 200128,
+        "Init_Win_bytes_backward": 256599,
+        "min_seg_size_forward": 11
+      },
+      "negative_set_nan": {
+        "Flow Duration": 17,
+        "Flow Packets/s": 17,
+        "Flow IAT Mean": 17,
+        "Flow IAT Max": 17,
+        "Flow IAT Min": 505,
+        "Fwd Header Length": 11,
+        "Bwd Header Length": 5,
+        "Fwd Header Length.1": 11,
+        "min_seg_size_forward": 11
+      },
+      "fwd_header_length_1_identical": true,
+      "timestamp_unparsed": 0,
+      "labels": {
+        "BENIGN": 432074,
+        "FTP-Patator": 7938,
+        "SSH-Patator": 5897
+      }
+    },
+    "Wednesday-workingHours": {
+      "rows": 692703,
+      "non_numeric": {},
+      "nan": {
+        "Flow Bytes/s": 1008
+      },
+      "inf": {
+        "Flow Bytes/s": 289,
+        "Flow Packets/s": 1297
+      },
+      "negative": {
+        "Flow Duration": 21,
+        "Flow Bytes/s": 16,
+        "Flow Packets/s": 21,
+        "Flow IAT Mean": 21,
+        "Flow IAT Max": 21,
+        "Flow IAT Min": 749,
+        "Fwd IAT Min": 11,
+        "Fwd Header Length": 1,
+        "Fwd Header Length.1": 1,
+        "Init_Win_bytes_forward": 203253,
+        "Init_Win_bytes_backward": 335475,
+        "min_seg_size_forward": 1
+      },
+      "negative_set_nan": {
+        "Flow Duration": 21,
+        "Flow Bytes/s": 16,
+        "Flow Packets/s": 21,
+        "Flow IAT Mean": 21,
+        "Flow IAT Max": 21,
+        "Flow IAT Min": 749,
+        "Fwd IAT Min": 11,
+        "Fwd Header Length": 1,
+        "Fwd Header Length.1": 1,
+        "min_seg_size_forward": 1
+      },
+      "fwd_header_length_1_identical": true,
+      "timestamp_unparsed": 0,
+      "labels": {
+        "BENIGN": 440031,
+        "DoS Hulk": 231073,
+        "DoS GoldenEye": 10293,
+        "DoS slowloris": 5796,
+        "DoS Slowhttptest": 5499,
+        "Heartbleed": 11
+      }
+    },
+    "Thursday-WorkingHours-Morning-WebAttacks": {
+      "rows": 170366,
+      "non_numeric": {},
+      "nan": {
+        "Flow Bytes/s": 20
+      },
+      "inf": {
+        "Flow Bytes/s": 115,
+        "Flow Packets/s": 135
+      },
+      "negative": {
+        "Flow Duration": 11,
+        "Flow Bytes/s": 10,
+        "Flow Packets/s": 11,
+        "Flow IAT Mean": 11,
+        "Flow IAT Max": 11,
+        "Flow IAT Min": 263,
+        "Init_Win_bytes_forward": 81911,
+        "Init_Win_bytes_backward": 102373
+      },
+      "negative_set_nan": {
+        "Flow Duration": 11,
+        "Flow Bytes/s": 10,
+        "Flow Packets/s": 11,
+        "Flow IAT Mean": 11,
+        "Flow IAT Max": 11,
+        "Flow IAT Min": 263
+      },
+      "fwd_header_length_1_identical": true,
+      "timestamp_unparsed": 0,
+      "labels": {
+        "BENIGN": 168186,
+        "Web Attack - Brute Force": 1507,
+        "Web Attack - XSS": 652,
+        "Web Attack - Sql Injection": 21
+      }
+    },
+    "Thursday-WorkingHours-Afternoon-Infilteration": {
+      "rows": 288602,
+      "non_numeric": {},
+      "nan": {
+        "Flow Bytes/s": 18
+      },
+      "inf": {
+        "Flow Bytes/s": 189,
+        "Flow Packets/s": 207
+      },
+      "negative": {
+        "Flow Duration": 4,
+        "Flow Bytes/s": 4,
+        "Flow Packets/s": 4,
+        "Flow IAT Mean": 4,
+        "Flow IAT Max": 4,
+        "Flow IAT Min": 353,
+        "Init_Win_bytes_forward": 102433,
+        "Init_Win_bytes_backward": 164351
+      },
+      "negative_set_nan": {
+        "Flow Duration": 4,
+        "Flow Bytes/s": 4,
+        "Flow Packets/s": 4,
+        "Flow IAT Mean": 4,
+        "Flow IAT Max": 4,
+        "Flow IAT Min": 353
+      },
+      "fwd_header_length_1_identical": true,
+      "timestamp_unparsed": 0,
+      "labels": {
+        "BENIGN": 288566,
+        "Infiltration": 36
+      }
+    },
+    "Friday-WorkingHours-Morning": {
+      "rows": 191033,
+      "non_numeric": {},
+      "nan": {
+        "Flow Bytes/s": 28
+      },
+      "inf": {
+        "Flow Bytes/s": 94,
+        "Flow Packets/s": 122
+      },
+      "negative": {
+        "Flow Duration": 9,
+        "Flow Bytes/s": 8,
+        "Flow Packets/s": 9,
+        "Flow IAT Mean": 9,
+        "Flow IAT Max": 9,
+        "Flow IAT Min": 225,
+        "Init_Win_bytes_forward": 95834,
+        "Init_Win_bytes_backward": 118419
+      },
+      "negative_set_nan": {
+        "Flow Duration": 9,
+        "Flow Bytes/s": 8,
+        "Flow Packets/s": 9,
+        "Flow IAT Mean": 9,
+        "Flow IAT Max": 9,
+        "Flow IAT Min": 225
+      },
+      "fwd_header_length_1_identical": true,
+      "timestamp_unparsed": 0,
+      "labels": {
+        "BENIGN": 189067,
+        "Bot": 1966
+      }
+    },
+    "Friday-WorkingHours-Afternoon-PortScan": {
+      "rows": 286467,
+      "non_numeric": {},
+      "nan": {
+        "Flow Bytes/s": 15
+      },
+      "inf": {
+        "Flow Bytes/s": 356,
+        "Flow Packets/s": 371
+      },
+      "negative": {
+        "Flow Duration": 36,
+        "Flow Bytes/s": 36,
+        "Flow Packets/s": 36,
+        "Flow IAT Mean": 36,
+        "Flow IAT Max": 36,
+        "Flow IAT Min": 176,
+        "Init_Win_bytes_forward": 60210,
+        "Init_Win_bytes_backward": 76942
+      },
+      "negative_set_nan": {
+        "Flow Duration": 36,
+        "Flow Bytes/s": 36,
+        "Flow Packets/s": 36,
+        "Flow IAT Mean": 36,
+        "Flow IAT Max": 36,
+        "Flow IAT Min": 176
+      },
+      "fwd_header_length_1_identical": true,
+      "timestamp_unparsed": 0,
+      "labels": {
+        "PortScan": 158930,
+        "BENIGN": 127537
+      }
+    },
+    "Friday-WorkingHours-Afternoon-DDos": {
+      "rows": 225745,
+      "non_numeric": {},
+      "nan": {
+        "Flow Bytes/s": 4
+      },
+      "inf": {
+        "Flow Bytes/s": 30,
+        "Flow Packets/s": 34
+      },
+      "negative": {
+        "Flow Duration": 2,
+        "Flow Bytes/s": 2,
+        "Flow Packets/s": 2,
+        "Flow IAT Mean": 2,
+        "Flow IAT Max": 2,
+        "Flow IAT Min": 108,
+        "Fwd IAT Min": 6,
+        "Init_Win_bytes_forward": 32925,
+        "Init_Win_bytes_backward": 88299
+      },
+      "negative_set_nan": {
+        "Flow Duration": 2,
+        "Flow Bytes/s": 2,
+        "Flow Packets/s": 2,
+        "Flow IAT Mean": 2,
+        "Flow IAT Max": 2,
+        "Flow IAT Min": 108,
+        "Fwd IAT Min": 6
+      },
+      "fwd_header_length_1_identical": true,
+      "timestamp_unparsed": 0,
+      "labels": {
+        "DDoS": 128027,
+        "BENIGN": 97718
+      }
+    }
+  },
+  "seconds": 114.1
+}

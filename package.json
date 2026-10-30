@@ -1,0 +1,11 @@
+{
+  "name": "attt-project-report",
+  "private": true,
+  "description": "Only used to build report.docx from docs/report.md",
+  "scripts": {
+    "report": "node scripts/build_report.js"
+  },
+  "dependencies": {
+    "docx": "9.15.0"
+  }
+}

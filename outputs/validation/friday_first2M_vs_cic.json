@@ -1,0 +1,106 @@
+{
+  "window_utc": [
+    "2017-07-07 12:00:00+00:00",
+    "2017-07-07 12:20:00+00:00"
+  ],
+  "flows_in_window": {
+    "ours": 9932,
+    "cic": 12632
+  },
+  "cic_labels_in_window": {
+    "BENIGN": 12632
+  },
+  "protocols": {
+    "ours": {
+      "17": 6737,
+      "6": 3153,
+      "58": 28,
+      "2": 11,
+      "1": 3
+    },
+    "cic": {
+      "17": 6680,
+      "6": 5930,
+      "0": 22
+    }
+  },
+  "coverage": {
+    "cic_flows_with_match": 0.9612096263457884,
+    "our_flows_with_match": 0.9889246878775675,
+    "cic_by_label": {
+      "BENIGN": {
+        "cic_flows": 12632,
+        "matched": 0.9612096263457884
+      }
+    }
+  },
+  "unambiguous_pairs": 8427,
+  "direction_agreement": 0.9991693366559867,
+  "total_packets": {
+    "exact": 0.8567699062537083,
+    "ours_more": 0.1431114275542898,
+    "ours_fewer": 0.00011866619200189867
+  },
+  "feature_agreement": {
+    "flow_duration_us": {
+      "exact": 0.8568885724457103,
+      "within_1pct": 0.9888453779518215,
+      "median_abs_diff": 0.0
+    },
+    "fwd_pkts": {
+      "exact": 0.8634152130058147,
+      "within_1pct": 0.8681618606858906,
+      "median_abs_diff": 0.0
+    },
+    "bwd_pkts": {
+      "exact": 0.860685890589771,
+      "within_1pct": 0.8678058621098849,
+      "median_abs_diff": 0.0
+    },
+    "fwd_bytes": {
+      "exact": 0.8710098492939362,
+      "within_1pct": 0.885249792334164,
+      "median_abs_diff": 0.0
+    },
+    "bwd_bytes": {
+      "exact": 0.8698231873739172,
+      "within_1pct": 0.9718761124955501,
+      "median_abs_diff": 0.0
+    },
+    "fwd_pkt_len_max": {
+      "exact": 0.9887267117598196,
+      "within_1pct": 0.9887267117598196,
+      "median_abs_diff": 0.0
+    },
+    "bwd_pkt_len_max": {
+      "exact": 0.9954906847039279,
+      "within_1pct": 0.9954906847039279,
+      "median_abs_diff": 0.0
+    },
+    "flow_iat_mean": {
+      "exact": 0.40310905423044974,
+      "within_1pct": 0.8631778806218109,
+      "median_abs_diff": 3.3333265037072124e-09
+    },
+    "syn_flag_cnt": {
+      "exact": 0.802064791740833,
+      "within_1pct": 0.802064791740833,
+      "median_abs_diff": 0.0
+    },
+    "fin_flag_cnt": {
+      "exact": 0.8562952414857007,
+      "within_1pct": 0.8562952414857007,
+      "median_abs_diff": 0.0
+    },
+    "init_win_bytes_fwd": {
+      "exact": 1.0,
+      "within_1pct": 1.0,
+      "median_abs_diff": 0.0
+    },
+    "init_win_bytes_bwd": {
+      "exact": 0.8202207191171236,
+      "within_1pct": 0.8223567105731577,
+      "median_abs_diff": 0.0
+    }
+  }
+}
