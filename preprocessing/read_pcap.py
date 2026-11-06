@@ -16,8 +16,15 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Iterator, NamedTuple
 
-from scapy.error import Scapy_Exception
-from scapy.utils import RawPcapNgReader, RawPcapReader
+try:
+    from scapy.error import Scapy_Exception
+    from scapy.utils import RawPcapNgReader, RawPcapReader
+except ImportError:  # pragma: no cover
+    class Scapy_Exception(Exception):  # type: ignore[no-redef]
+        pass
+
+    RawPcapNgReader = None  # type: ignore[assignment]
+    RawPcapReader = None  # type: ignore[assignment]
 
 logger = logging.getLogger(__name__)
 

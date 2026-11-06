@@ -1,0 +1,162 @@
+{
+  "comparison": [
+    {
+      "Approach": "Gaussian Anomaly (Stage 1 Only)",
+      "Paradigm": "Unsupervised",
+      "Accuracy": 0.9822429906542056,
+      "Precision": 0.9888111888111888,
+      "Recall": 0.9592944369063772,
+      "F1-Score": 0.9738292011019284,
+      "FPR": 0.005702066999287242,
+      "ZeroDay_Recall": 1.0,
+      "Botnet_Recall": 0.509090909090909,
+      "Latency_ms_per_flow": 3.5093458264382887e-05
+    },
+    {
+      "Approach": "Isolation Forest",
+      "Paradigm": "Unsupervised",
+      "Accuracy": 0.9672897196261683,
+      "Precision": 0.9897209985315712,
+      "Recall": 0.9145183175033921,
+      "F1-Score": 0.9506346967559943,
+      "FPR": 0.004989308624376337,
+      "ZeroDay_Recall": 0.125,
+      "Botnet_Recall": 0.509090909090909,
+      "Latency_ms_per_flow": 0.005816822428820398
+    },
+    {
+      "Approach": "Random Forest (Stage 2 Only)",
+      "Paradigm": "Supervised Multi-class",
+      "Accuracy": 0.9686915887850467,
+      "Precision": 1.0,
+      "Recall": 0.9090909090909091,
+      "F1-Score": 0.9523809523809523,
+      "FPR": 0.0,
+      "ZeroDay_Recall": 0.0,
+      "Botnet_Recall": 0.509090909090909,
+      "Latency_ms_per_flow": 0.014005981307984307
+    },
+    {
+      "Approach": "Gradient Boosting",
+      "Paradigm": "Supervised Multi-class",
+      "Accuracy": 0.9686915887850467,
+      "Precision": 1.0,
+      "Recall": 0.9090909090909091,
+      "F1-Score": 0.9523809523809523,
+      "FPR": 0.0,
+      "ZeroDay_Recall": 0.0,
+      "Botnet_Recall": 0.509090909090909,
+      "Latency_ms_per_flow": 0.008389345794482587
+    },
+    {
+      "Approach": "Deep MLP Classifier",
+      "Paradigm": "Supervised DL",
+      "Accuracy": 0.9686915887850467,
+      "Precision": 1.0,
+      "Recall": 0.9090909090909091,
+      "F1-Score": 0.9523809523809523,
+      "FPR": 0.0,
+      "ZeroDay_Recall": 0.0,
+      "Botnet_Recall": 0.509090909090909,
+      "Latency_ms_per_flow": 0.000626635515358447
+    },
+    {
+      "Approach": "2-Stage Pipeline (Gaussian + RF)",
+      "Paradigm": "Hybrid (Stage 1+2)",
+      "Accuracy": 0.9873831775700934,
+      "Precision": 1.0,
+      "Recall": 0.9633649932157394,
+      "F1-Score": 0.9813407049067036,
+      "FPR": 0.0,
+      "ZeroDay_Recall": 1.0,
+      "Botnet_Recall": 0.509090909090909,
+      "Latency_ms_per_flow": 0.023934018692977087
+    },
+    {
+      "Approach": "3-Stage Hybrid Pipeline (Full)",
+      "Paradigm": "Cascading (Stage 1+2+3)",
+      "Accuracy": 1.0,
+      "Precision": 1.0,
+      "Recall": 1.0,
+      "F1-Score": 1.0,
+      "FPR": 0.0,
+      "ZeroDay_Recall": 1.0,
+      "Botnet_Recall": 1.0,
+      "Latency_ms_per_flow": 0.17236934579337923
+    }
+  ],
+  "ablation": [
+    {
+      "Approach": "Gaussian Anomaly (Stage 1 Only)",
+      "Paradigm": "Unsupervised",
+      "Accuracy": 0.9822429906542056,
+      "Precision": 0.9888111888111888,
+      "Recall": 0.9592944369063772,
+      "F1-Score": 0.9738292011019284,
+      "FPR": 0.005702066999287242,
+      "ZeroDay_Recall": 1.0,
+      "Botnet_Recall": 0.509090909090909,
+      "Latency_ms_per_flow": 3.5093458264382887e-05
+    },
+    {
+      "Approach": "Random Forest (Stage 2 Only)",
+      "Paradigm": "Supervised Multi-class",
+      "Accuracy": 0.9686915887850467,
+      "Precision": 1.0,
+      "Recall": 0.9090909090909091,
+      "F1-Score": 0.9523809523809523,
+      "FPR": 0.0,
+      "ZeroDay_Recall": 0.0,
+      "Botnet_Recall": 0.509090909090909,
+      "Latency_ms_per_flow": 0.014005981307984307
+    },
+    {
+      "Approach": "2-Stage Pipeline (Gaussian + RF)",
+      "Paradigm": "Hybrid (Stage 1+2)",
+      "Accuracy": 0.9873831775700934,
+      "Precision": 1.0,
+      "Recall": 0.9633649932157394,
+      "F1-Score": 0.9813407049067036,
+      "FPR": 0.0,
+      "ZeroDay_Recall": 1.0,
+      "Botnet_Recall": 0.509090909090909,
+      "Latency_ms_per_flow": 0.023934018692977087
+    },
+    {
+      "Approach": "3-Stage Hybrid Pipeline (Full)",
+      "Paradigm": "Cascading (Stage 1+2+3)",
+      "Accuracy": 1.0,
+      "Precision": 1.0,
+      "Recall": 1.0,
+      "F1-Score": 1.0,
+      "FPR": 0.0,
+      "ZeroDay_Recall": 1.0,
+      "Botnet_Recall": 1.0,
+      "Latency_ms_per_flow": 0.17236934579337923
+    }
+  ],
+  "pipeline_summary": {
+    "n_flows": 2140,
+    "stage1_flagged": 715,
+    "stage2_attacks": 670,
+    "stage3_topology": "centralized",
+    "stage3_botnet_hosts": 7,
+    "alerts_count": 737,
+    "attack_breakdown": {
+      "BENIGN": 1403,
+      "DoS": 234,
+      "DDoS": 177,
+      "PortScan": 172,
+      "Bot": 95,
+      "BruteForce": 59
+    },
+    "latency_total_ms": 368.87039999783156,
+    "latency_per_flow_ms": 0.17236934579337923,
+    "stage_latencies_ms": {
+      "stage1_gaussian": 1.8216999997093808,
+      "stage2_rf": 30.090100000961684,
+      "stage3_graph_host": 336.48689999972703
+    }
+  },
+  "timestamp": "2026-11-06 14:14:02"
+}

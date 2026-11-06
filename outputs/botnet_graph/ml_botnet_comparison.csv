@@ -1,0 +1,7 @@
+Model,Category,Accuracy,Precision,Recall,F1-Score,ROC-AUC,FPR
+Graph Topology Heuristic,Unsupervised Rule,1.0,1.0,1.0,1.0,1.0,0.0
+Gaussian Anomaly (Graph),Unsupervised ML,1.0,1.0,1.0,1.0,1.0,0.0
+Isolation Forest (Graph),Unsupervised ML,0.8235294117647058,0.6428571428571429,0.9,0.75,0.8541666666666666,0.20833333333333334
+Random Forest (Graph),Supervised ML,1.0,1.0,1.0,1.0,1.0,0.0
+Gradient Boosting (Graph),Supervised ML,1.0,1.0,1.0,1.0,1.0,0.0
+MLP Neural Net (Graph),Supervised DL,1.0,1.0,1.0,1.0,1.0,0.0

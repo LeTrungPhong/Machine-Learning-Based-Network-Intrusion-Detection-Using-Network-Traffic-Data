@@ -1,0 +1,107 @@
+{
+  "topology_summary": {
+    "topology_type": "hybrid",
+    "n_nodes": 96,
+    "n_edges": 294,
+    "global_reciprocity": 0.40816326530612246,
+    "average_clustering": 0.11111111111111115,
+    "c2_servers": [
+      "203.0.113.200"
+    ],
+    "centralized_bots": [
+      "10.0.2.1",
+      "10.0.2.10",
+      "10.0.2.11",
+      "10.0.2.12",
+      "10.0.2.13",
+      "10.0.2.14",
+      "10.0.2.15",
+      "10.0.2.2",
+      "10.0.2.3",
+      "10.0.2.4",
+      "10.0.2.5",
+      "10.0.2.6",
+      "10.0.2.7",
+      "10.0.2.8",
+      "10.0.2.9"
+    ],
+    "p2p_bots": [
+      "10.0.3.1",
+      "10.0.3.10",
+      "10.0.3.11",
+      "10.0.3.12",
+      "10.0.3.2",
+      "10.0.3.3",
+      "10.0.3.4",
+      "10.0.3.5",
+      "10.0.3.6",
+      "10.0.3.7",
+      "10.0.3.8",
+      "10.0.3.9"
+    ],
+    "total_suspect_nodes": 28
+  },
+  "ml_comparison": {
+    "Graph Topology Heuristic": {
+      "Model": "Graph Topology Heuristic",
+      "Category": "Unsupervised Rule",
+      "Accuracy": 1.0,
+      "Precision": 1.0,
+      "Recall": 1.0,
+      "F1-Score": 1.0,
+      "ROC-AUC": 1.0,
+      "FPR": 0.0
+    },
+    "Gaussian Anomaly (Graph)": {
+      "Model": "Gaussian Anomaly (Graph)",
+      "Category": "Unsupervised ML",
+      "Accuracy": 1.0,
+      "Precision": 1.0,
+      "Recall": 1.0,
+      "F1-Score": 1.0,
+      "ROC-AUC": 1.0,
+      "FPR": 0.0
+    },
+    "Isolation Forest (Graph)": {
+      "Model": "Isolation Forest (Graph)",
+      "Category": "Unsupervised ML",
+      "Accuracy": 0.8235294117647058,
+      "Precision": 0.6428571428571429,
+      "Recall": 0.9,
+      "F1-Score": 0.75,
+      "ROC-AUC": 0.8541666666666666,
+      "FPR": 0.20833333333333334
+    },
+    "Random Forest (Graph)": {
+      "Model": "Random Forest (Graph)",
+      "Category": "Supervised ML",
+      "Accuracy": 1.0,
+      "Precision": 1.0,
+      "Recall": 1.0,
+      "F1-Score": 1.0,
+      "ROC-AUC": 1.0,
+      "FPR": 0.0
+    },
+    "Gradient Boosting (Graph)": {
+      "Model": "Gradient Boosting (Graph)",
+      "Category": "Supervised ML",
+      "Accuracy": 1.0,
+      "Precision": 1.0,
+      "Recall": 1.0,
+      "F1-Score": 1.0,
+      "ROC-AUC": 1.0,
+      "FPR": 0.0
+    },
+    "MLP Neural Net (Graph)": {
+      "Model": "MLP Neural Net (Graph)",
+      "Category": "Supervised DL",
+      "Accuracy": 1.0,
+      "Precision": 1.0,
+      "Recall": 1.0,
+      "F1-Score": 1.0,
+      "ROC-AUC": 1.0,
+      "FPR": 0.0
+    }
+  },
+  "timestamp": "2026-11-06 15:55:53"
+}

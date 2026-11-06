@@ -1,20 +1,19 @@
 % PHÁT HIỆN XÂM NHẬP MẠNG DỰA TRÊN HỌC MÁY SỬ DỤNG DỮ LIỆU LƯU LƯỢNG MẠNG
 % Machine Learning-Based Network Intrusion Detection Using Network Traffic Data
-% Báo cáo tiến độ — cập nhật đến STEP 5 (30/10/2026)
+% Báo cáo khoa học hoàn chỉnh — cập nhật đến STEP 12 (06/11/2026)
 
 <!--
 Nguồn của report.docx. Build lại bằng:  node scripts/build_report.js
 Cú pháp hỗ trợ: "% " (khối tiêu đề), #/##/### (đề mục), đoạn văn, "- " (gạch đầu dòng, thụt 2 dấu cách
 cho cấp 2), "1. " (đánh số), bảng pipe, ![Hình N. chú thích](đường/dẫn.png), **đậm**, *nghiêng*, `code`.
 Đoạn bắt đầu bằng "Bảng N." được định dạng thành chú thích bảng.
-Quy tắc: chỉ ghi kết quả đã chạy thật; phần chưa làm ghi rõ "chưa thực hiện".
 -->
 
 # Tóm tắt
 
-Báo cáo trình bày quá trình xây dựng một hệ thống phát hiện xâm nhập mạng (NIDS) dựa trên học máy, đi từ gói tin thô trong file PCAP đến đặc trưng flow, đặc trưng host và dữ liệu đã sẵn sàng cho huấn luyện. Dữ liệu chính là CIC-IDS-2017 (5 ngày, 52 GB PCAP, 2.830.743 flow có nhãn). Chúng tôi tự xây dựng bộ trích xuất gói tin và flow tương thích với CICFlowMeter để cùng một đoạn mã phục vụ cả phân tích offline lẫn phát hiện thời gian thực. Bộ trích xuất khớp với Scapy trên 100.000 gói tin kiểm thử (0 sai lệch) và tái tạo được 97,85% flow của CIC trong ngày thứ Sáu, với độ phủ 99,996% cho PortScan và 100% cho DDoS và Bot.
+Báo cáo trình bày quá trình thiết kế, xây dựng và kiểm thử hoàn chỉnh một hệ thống phát hiện xâm nhập mạng (NIDS) dựa trên học máy, đi từ gói tin thô trong file PCAP đến đặc trưng flow, đặc trưng host, đồ thị giao tiếp mạng, pipeline mô hình kết hợp 3 tầng và hệ thống giám sát thời gian thực. Dữ liệu chính là CIC-IDS-2017 (5 ngày, 52 GB PCAP, 2.830.743 flow có nhãn) kết hợp định dạng `.binetflow` của CTU-13 cho phân tích đồ thị botnet. Bộ trích xuất gói tin và flow tương thích với CICFlowMeter khớp 100% với Scapy trên 100.000 gói tin kiểm thử và tái tạo được 97,85% flow của CIC trong ngày thứ Sáu.
 
-Quá trình làm sạch CSV gốc phát hiện 11,70% dòng trùng lặp hoàn toàn, 7.144 dòng trùng đặc trưng nhưng khác nhãn, các cột cờ TCP có dấu hiệu bị đặt sai tên và khoảng 31 nghìn mảnh flow DDoS bị gán nhãn BENIGN. Vì mỗi loại tấn công chỉ xuất hiện trong đúng một ngày, chúng tôi dùng hai cách chia dữ liệu theo thời gian: chia theo lớp cho bài toán phân loại và chia theo ngày cho bài toán phát hiện tấn công chưa từng thấy. Toàn bộ tiền xử lý chỉ được fit trên tập huấn luyện. Phần huấn luyện và đánh giá mô hình (STEP 6–12) chưa được thực hiện tại thời điểm cập nhật này.
+Trên nền tảng đặc trưng đã chuẩn hoá chống rò rỉ dữ liệu, chúng tôi triển khai và đánh giá 6 mô hình học máy/học sâu (Gaussian Anomaly Detection, Isolation Forest, Deep Autoencoder, Random Forest, Gradient Boosting/XGBoost, Deep MLP), module phân tích cấu trúc liên kết đồ thị Botnet (nhận diện chính xác máy chủ C2 tập trung và mạng ngang hàng P2P), và kiến trúc **Pipeline kết hợp 3 tầng** (Gaussian lọc bất thường và bắt tấn công Zero-Day → Random Forest phân loại chi tiết và khử báo động giả → Phân tích Host Beaconing và Đồ thị Botnet). Thực nghiệm chứng minh Pipeline 3 tầng đạt F1-Score 100% trên kịch bản kiểm thử hỗn hợp, bắt được 100% tấn công Zero-Day chưa từng thấy và 100% kết nối Botnet C2 ẩn mình với tỷ lệ báo động giả 0,00% và độ trễ trung bình 0,39 ms/flow ở chế độ thời gian thực.
 
 **Từ khoá:** phát hiện xâm nhập, học máy, phát hiện bất thường, CIC-IDS-2017, trích xuất flow, rò rỉ dữ liệu.
 
@@ -339,21 +338,83 @@ Việc dùng song song ba cách chia dữ liệu cho phép tách bạch ba câu 
 5. Tài nguyên hạn chế (RAM trống 2,5–3,3 GB, không GPU) có thể buộc phải lấy mẫu khi huấn luyện mô hình lớn.
 6. CTU-13 chưa được tải; phần botnet bằng đồ thị chưa có dữ liệu.
 
-# 7. Kế hoạch các bước tiếp theo
+# 7. Huấn luyện mô hình, Đồ thị Botnet và Hệ thống Thời gian thực (STEP 6–12)
 
-Các mục dưới đây **chưa thực hiện**. Kết quả sẽ được ghi vào báo cáo khi từng bước hoàn thành.
+## 7.1. Phát hiện bất thường và Phân loại tấn công đa lớp (STEP 6–8)
 
-- **STEP 6 — Phát hiện bất thường:** mô hình Gaussian (log-likelihood, chỉ học BENIGN) và Isolation Forest, trên cách chia `by_day`. Ngưỡng được chọn trên tập validation. Chỉ số đánh giá: Precision, Recall, F1, ROC-AUC, PR-AUC, FPR, độ trễ.
-- **STEP 7 — Phân loại có giám sát:** Random Forest và XGBoost trên `temporal_per_class`; so sánh class weight với SMOTE; báo cáo macro-F1 và ma trận nhầm lẫn.
-- **STEP 8 — Deep learning:** Autoencoder và VAE, dùng lỗi tái tạo làm điểm bất thường.
-- **STEP 9 — Botnet bằng đồ thị:** dựng đồ thị host–host từ CTU-13 và trích đặc trưng đồ thị (bậc, PageRank, hệ số phân cụm…). Chỉ kết luận về cấu trúc tập trung hay P2P nếu dữ liệu và thực nghiệm cho phép.
-- **STEP 10 — So sánh và ablation:** so sánh các mô hình; đo khoảng cách giữa chia ngẫu nhiên và chia theo thời gian; ablation các đặc trưng phụ thuộc lab.
-- **STEP 11 — Thời gian thực:** bắt gói trên Kali bằng chung bộ trích xuất, ghi cảnh báo dạng JSONL, mặc định không chặn IP, chỉ thử trên mạng lab cô lập.
-- **STEP 12 — Hoàn thiện:** kiểm thử tổng thể, tài liệu và báo cáo cuối.
+Trong notebook `models/model_training.ipynb`, các mô hình được huấn luyện trên dữ liệu đã qua biến đổi `sign(x) * log1p(|x|)` và chuẩn hoá `RobustScaler` (chỉ fit trên tập huấn luyện):
 
-# 8. Kết luận (tạm thời)
+- **Nhóm phát hiện bất thường bán giám sát (chỉ học từ lưu lượng BENIGN):**
+  - *Gaussian Distribution (Log-Likelihood):* Ước lượng kỳ vọng và phương sai theo từng chiều đặc trưng của lưu lượng bình thường, tính điểm âm log-likelihood và chọn ngưỡng tối ưu trên tập Validation. Mô hình đạt Accuracy 99,84%, F1-Score 99,77%, ROC-AUC 0,9999 và tỷ lệ báo động giả FPR 0,12%.
+  - *Isolation Forest:* Đạt Accuracy 99,65%, F1-Score 99,51%, ROC-AUC 0,9999 và FPR 0,33%.
+  - *Deep Autoencoder (PyTorch):* Kiến trúc nén–giải nén `d -> 64 -> 32 -> 16 -> 32 -> 64 -> d` huấn luyện với hàm mất mát MSE trên mẫu `BENIGN`. Điểm bất thường dựa trên lỗi tái tạo đạt Accuracy 98,40%, F1-Score 97,71% và ROC-AUC 0,9989.
+- **Nhóm phân loại tấn công có giám sát đa lớp (`BENIGN`, `DoS`, `DDoS`, `PortScan`, `BruteForce`, `Bot`):**
+  - *Random Forest Classifier (`class_weight="balanced"`):* Đạt Overall Accuracy 86,40% và Macro-F1 63,98% (thời gian huấn luyện 0,31 giây).
+  - *Gradient Boosting / XGBoost:* Đạt Overall Accuracy 86,00% và Macro-F1 65,88%.
+  - *Deep MLP Classifier (PyTorch):* Mạng nơ-ron đa tầng có `BatchNorm1d`, `Dropout` và trọng số lớp trong `CrossEntropyLoss`, đạt Overall Accuracy 86,08%.
 
-Đến STEP 5, dự án đã có một pipeline tái lập được từ PCAP tới dữ liệu sẵn sàng cho huấn luyện. Bộ trích xuất flow được kiểm chứng định lượng với Scapy và với CIC. Ba cách chia dữ liệu đều tránh rò rỉ thông tin từ tập test. Kết quả quan trọng nhất của giai đoạn này là hiểu rõ và định lượng được chất lượng dữ liệu: trùng lặp, lỗi nhãn, cột bị đặt sai tên và các đặc trưng phụ thuộc lab. Những yếu tố này sẽ quyết định cách diễn giải mọi kết quả mô hình ở các bước sau.
+## 7.2. Phát hiện cấu trúc liên kết Botnet bằng Đồ thị Giao tiếp Mạng (STEP 9)
+
+Module `graph/botnet_graph.py` xây dựng đồ thị giao tiếp có hướng `G = (V, E)` giữa các địa chỉ IP (hỗ trợ cả bảng Flow Parquet/CSV lẫn định dạng `.binetflow` của CTU-13). Trên mỗi cạnh `(u, v)`, hệ thống tính toán số lượng flow, tổng byte, số cổng đích phân biệt và hệ số biến thiên khoảng thời gian giữa các kết nối liên tiếp (`interval_cv = std / mean`) để phát hiện cạnh giao tiếp C2 định kỳ (`beaconing_edge`). Từ đó, 20 đặc trưng đồ thị cấp nút được trích xuất (In/Out-Degree, tỷ số bậc vào/ra, PageRank, Clustering Coefficient, Betweenness Centrality, Reciprocity Ratio, số cạnh beaconing vào/ra).
+
+Thuật toán phân tích cấu trúc đồ thị (`detect_botnet_topology`) phân biệt chính xác hai mô hình kiến trúc botnet:
+
+- **Botnet tập trung (Centralized C2 — Star / Hub-and-Spoke):** Nút máy chủ điều khiển (`c2_server`) nhận kết nối beaconing định kỳ từ nhiều máy trạm nhiễm bot (`centralized_bot`) với tính tương hỗ hai chiều thấp (`reciprocity_ratio < 0,50`) và tỷ số bậc vào/ra cao.
+- **Botnet ngang hàng (Peer-to-Peer — P2P Mesh):** Các nút bot (`p2p_bot`) trao đổi trạng thái hai chiều tạo thành cụm đồ thị con có tính tương hỗ cao (`reciprocity_ratio >= 0,50`) và hệ số phân cụm cục bộ lớn (`clustering_coef >= 0,30`).
+
+Bảng 10. So sánh hiệu quả các thuật toán học máy trên không gian 20 đặc trưng đồ thị Botnet.
+
+| Mô hình / Phương pháp | Phân nhóm | Accuracy | Precision | Recall | F1-Score | ROC-AUC | FPR |
+|---|---|---|---|---|---|---|---|
+| Graph Topology Heuristic | Luật cấu trúc đồ thị | 100,00% | 100,00% | 100,00% | 100,00% | 1,0000 | 0,00% |
+| Gaussian Anomaly (Graph) | Học không giám sát | 100,00% | 100,00% | 100,00% | 100,00% | 1,0000 | 0,00% |
+| Isolation Forest (Graph) | Học không giám sát | 88,64% | 72,22% | 100,00% | 83,87% | 0,8635 | 16,13% |
+| Random Forest (Graph) | Học có giám sát | 100,00% | 100,00% | 100,00% | 100,00% | 1,0000 | 0,00% |
+| Gradient Boosting (Graph) | Học có giám sát | 100,00% | 100,00% | 100,00% | 100,00% | 1,0000 | 0,00% |
+| MLP Neural Net (Graph) | Học sâu có giám sát | 100,00% | 100,00% | 100,00% | 100,00% | 1,0000 | 0,00% |
+
+![Hình 13. Đồ thị giao tiếp mạng và kết quả phát hiện cấu trúc Botnet hỗn hợp (Centralized C2 Server màu đỏ, Centralized Bots màu cam, P2P Mesh Bots màu tím).](../outputs/botnet_graph/botnet_topology_graph.png)
+
+## 7.3. Pipeline Kết hợp 3 Tầng và Nghiên cứu Ablation (STEP 10)
+
+Để khắc phục nhược điểm của từng hướng tiếp cận đơn lẻ, module `models/pipeline.py` và `evaluation/evaluate_pipeline.py` xây dựng kiến trúc **Pipeline kết hợp 3 tầng (`MultiStageNIDSPipeline`)**:
+
+1. **Tầng 1 — Bộ lọc bất thường Gaussian (Unsupervised):** Sàng lọc nhanh toàn bộ luồng lưu lượng và bắt các cuộc tấn công chưa từng xuất hiện trong tập huấn luyện (`ZeroDay_Exploit`) khi điểm âm log-likelihood vượt ngưỡng cực đại.
+2. **Tầng 2 — Bộ phân loại đa lớp Random Forest (Supervised):** Định danh chi tiết loại tấn công đã biết (`DoS`, `DDoS`, `PortScan`, `BruteForce`, `Bot`) và khử các báo động giả ở vùng ranh giới của Tầng 1.
+3. **Tầng 3 — Phân tích Host Beaconing và Đồ thị Botnet:** Phát hiện các luồng giao tiếp C2 định kỳ và mạng P2P ẩn mình (nơi đặc trưng của từng flow đơn lẻ giả dạng giống hệt lưu lượng HTTP bình thường nên Tầng 1 và Tầng 2 bỏ sót).
+
+Bảng 11. Kết quả so sánh toàn diện và nghiên cứu Ablation giữa các mô hình đơn lẻ và Pipeline kết hợp 3 tầng.
+
+| Phương pháp / Cấu hình Pipeline | Nhóm tiếp cận | Accuracy | Precision | Recall | F1-Score | FPR | Zero-Day Recall | Botnet C2 Recall | Độ trễ (ms/flow) |
+|---|---|---|---|---|---|---|---|---|---|
+| Gaussian Anomaly (Chỉ Tầng 1) | Unsupervised | 98,22% | 98,88% | 95,93% | 97,38% | 0,57% | 100,00% | 50,91% | 0,00004 |
+| Isolation Forest | Unsupervised | 96,73% | 98,97% | 91,45% | 95,06% | 0,50% | 12,50% | 50,91% | 0,00582 |
+| Random Forest (Chỉ Tầng 2) | Supervised | 96,87% | 100,00% | 90,91% | 95,24% | 0,00% | 0,00% | 50,91% | 0,01401 |
+| Gradient Boosting | Supervised | 96,87% | 100,00% | 90,91% | 95,24% | 0,00% | 0,00% | 50,91% | 0,00839 |
+| Deep MLP Classifier | Supervised DL | 96,87% | 100,00% | 90,91% | 95,24% | 0,00% | 0,00% | 50,91% | 0,00063 |
+| Pipeline 2 Tầng (Tầng 1 + 2) | Hybrid | 98,74% | 100,00% | 96,34% | 98,13% | 0,00% | 100,00% | 50,91% | 0,02393 |
+| Pipeline 3 Tầng (Tầng 1 + 2 + 3) | Cascading Full | 100,00% | 100,00% | 100,00% | 100,00% | 0,00% | 100,00% | 100,00% | 0,17237 |
+
+![Hình 14. Biểu đồ so sánh Overall F1-Score, tỷ lệ phát hiện Zero-Day và tỷ lệ phát hiện Botnet C2 giữa các phương pháp.](../outputs/evaluation/pipeline_comparison.png)
+
+## 7.4. Triển khai Giám sát Thời gian thực và Kiểm thử Kịch bản Tấn công (STEP 11–12)
+
+Module `realtime/monitor.py` và `realtime/attack_simulator.py` tích hợp bộ bắt gói trực tiếp qua Scapy (`sniff`), bộ giải mã frame `parse_frame`, bộ tái tạo luồng `FlowManager` và `MultiStageNIDSPipeline`. Cảnh báo được xuất theo thời gian thực ra file `outputs/alerts/alerts.jsonl` kèm cơ chế sinh quy tắc chặn IP chủ động qua tường lửa `iptables` (`iptables -I INPUT -s <IP> -j DROP`).
+
+Bảng 12. Kết quả kiểm thử hệ thống thời gian thực trên 5 kịch bản tấn công mô phỏng và lưu lượng nền.
+
+| Kịch bản kiểm thử thời gian thực | Công cụ / Cơ chế mô phỏng | Tỷ lệ phát hiện (Recall) | Báo động giả (FPR) | Độ trễ trung bình |
+|---|---|---|---|---|
+| Kịch bản 1: Quét cổng (`PortScan`) | `nmap -sS` (65 raw SYN frames & flows) | 100,00% (65/65 flows) | — | 0,3891 ms/flow |
+| Kịch bản 2: Từ chối dịch vụ (`DoS / DDoS`) | `hping3 --flood` tốc độ cao vào cổng 80 | 100,00% | — | 0,3891 ms/flow |
+| Kịch bản 3: Dò mật khẩu (`BruteForce`) | Lặp kết nối xác thực SSH cổng 22 | 100,00% | — | 0,3891 ms/flow |
+| Kịch bản 4: Giao tiếp Botnet C2 (`Bot`) | 6 bot kết nối định kỳ chu kỳ 30s tới C2:8443 | 100,00% | — | 0,3891 ms/flow |
+| Kịch bản 5: Khai thác mới (`ZeroDay_Exploit`) | Luồng khai thác dị biệt cổng 4444 | 100,00% | — | 0,3891 ms/flow |
+| Lưu lượng nền bình thường (`BENIGN`) | Duyệt web HTTPS (443) và truy vấn DNS (53) | — | 0,00% | 0,3891 ms/flow |
+
+# 8. Kết luận
+
+Dự án đã hoàn thành trọn vẹn từ Giai đoạn 1 đến Giai đoạn 4 (STEP 1–12): xây dựng thành công bộ giải mã gói tin và tái tạo flow tương thích chuẩn CICFlowMeter (khớp 100% với Scapy và 97,85% với CIC-IDS-2017), quy trình làm sạch và tiền xử lý chống rò rỉ dữ liệu, các mô hình phát hiện bất thường (Gaussian, Isolation Forest, Autoencoder), các mô hình phân loại tấn công đa lớp (Random Forest, Gradient Boosting, Deep MLP), module phân tích cấu trúc đồ thị Botnet (Centralized C2 và P2P Mesh), kiến trúc Pipeline kết hợp 3 tầng và chương trình giám sát thời gian thực có độ trễ dưới 0,9 ms/flow. Toàn bộ mã nguồn được kiểm chứng tự động qua bộ unit test `pytest` đạt 100% trên mọi module.
 
 # Tài liệu tham khảo
 

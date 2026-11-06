@@ -1,0 +1,67 @@
+{
+  "Gaussian Distribution": {
+    "Model": "Gaussian Distribution",
+    "Task": "Anomaly Detection (Binary)",
+    "Accuracy": 0.9984,
+    "Precision": 0.9977220956719818,
+    "Recall": 0.9977220956719818,
+    "F1-Score": 0.9977220956719818,
+    "ROC-AUC": 0.9999906374667981,
+    "FPR": 0.0012330456226880395,
+    "Optimal_Threshold": 29.81149673461914
+  },
+  "Isolation Forest": {
+    "Model": "Isolation Forest",
+    "Task": "Anomaly Detection (Binary)",
+    "Accuracy": 0.9965333333333334,
+    "Precision": 0.9939393939393939,
+    "Recall": 0.9962034927866363,
+    "F1-Score": 0.9950701554797118,
+    "ROC-AUC": 0.9999219788899844,
+    "FPR": 0.0032881216605014385,
+    "Optimal_Threshold": 0.544365988803391
+  },
+  "Random Forest": {
+    "Model": "Random Forest",
+    "Task": "Supervised Multi-class",
+    "Accuracy": 0.864,
+    "Precision": 0.6508763622814916,
+    "Recall": 0.6550857465170687,
+    "F1-Score": 0.6397862934902022,
+    "ROC-AUC": NaN,
+    "FPR": NaN,
+    "Train_Time_s": 0.38396453857421875
+  },
+  "XGBoost/GradientBoost": {
+    "Model": "XGBoost / GradientBoost",
+    "Task": "Supervised Multi-class",
+    "Accuracy": 0.86,
+    "Precision": 0.6591292532706194,
+    "Recall": 0.6594036365859216,
+    "F1-Score": 0.6587868471464583,
+    "ROC-AUC": NaN,
+    "FPR": NaN,
+    "Train_Time_s": 2.290985345840454
+  },
+  "Deep Autoencoder": {
+    "Model": "Deep Autoencoder",
+    "Task": "Anomaly Detection (Binary)",
+    "Accuracy": 0.984,
+    "Precision": 0.9808722264728386,
+    "Recall": 0.973424449506454,
+    "F1-Score": 0.9771341463414634,
+    "ROC-AUC": 0.998946402930348,
+    "FPR": 0.010275380189066995,
+    "Optimal_Threshold": 0.16886289417743683
+  },
+  "Deep MLP": {
+    "Model": "Deep MLP Classifier",
+    "Task": "Supervised Multi-class",
+    "Accuracy": 0.8608,
+    "Precision": 0.5930044307090271,
+    "Recall": 0.6626703845945373,
+    "F1-Score": 0.6037026748270716,
+    "ROC-AUC": NaN,
+    "FPR": NaN
+  }
+}

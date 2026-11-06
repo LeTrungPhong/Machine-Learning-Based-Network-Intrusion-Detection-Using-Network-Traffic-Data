@@ -1,4 +1,4 @@
-"""Tests for the command-line entry point."""
+"""Tests for the command-line entry point (main.py)."""
 
 from __future__ import annotations
 
@@ -7,9 +7,14 @@ import pytest
 import main
 
 
-def test_unimplemented_modes_exit_with_status_2() -> None:
-    for mode in main.PLANNED_MODES:
-        assert main.main(["--mode", mode]) == 2
+def test_offline_without_inputs_exits_with_status_2() -> None:
+    assert main.main(["--mode", "offline"]) == 2
+
+
+def test_realtime_simulate_and_train_succeed() -> None:
+    assert main.main(["--mode", "train"]) == 0
+    assert main.main(["--mode", "realtime", "--simulate"]) == 0
+    assert main.main(["--mode", "offline", "--simulate"]) == 0
 
 
 def test_invalid_mode_rejected() -> None:

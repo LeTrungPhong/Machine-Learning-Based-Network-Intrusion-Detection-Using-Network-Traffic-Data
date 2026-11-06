@@ -204,7 +204,14 @@ models:
   vae: {}
   random_forest: {}
   xgboost: {}
-  botnet_graph: {}
+  botnet_graph:
+    min_beacon_flows: 5             # minimum flows on a directed edge (src -> dst) to evaluate periodicity
+    max_beacon_cv: 0.25             # maximum coefficient of variation (std/mean) of inter-flow intervals for beaconing
+    c2_min_beacon_peers: 3          # minimum distinct bots beaconing to a host to classify it as a centralized C2 server
+    p2p_min_peers: 3                # minimum bidirectional peers for a P2P bot candidate
+    p2p_min_clustering: 0.30        # minimum undirected clustering coefficient for P2P mesh membership
+    p2p_min_reciprocity: 0.50       # minimum fraction of reciprocal peer edges for P2P bot classification
+    pagerank_alpha: 0.85            # damping factor for PageRank centrality
 
 # -----------------------------------------------------------------------------
 # Phase 9 - real-time detection
