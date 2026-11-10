@@ -162,13 +162,18 @@ class IsolationForestDetector:
 
 
 def build_detector(kind: str, params: dict[str, Any] | None = None, seed: int = 42) -> Any:
-    """Create a detector from its config name (``gaussian`` or ``isolation_forest``)."""
+    """Create a detector from its config name (``gaussian``, ``isolation_forest``, ``autoencoder``, ``vae``)."""
     params = dict(params or {})
     if kind == "gaussian":
         return GaussianAnomalyDetector(**params)
     if kind == "isolation_forest":
         params.setdefault("random_state", seed)
         return IsolationForestDetector(**params)
+    if kind in ("autoencoder", "vae"):
+        from models.deep_anomaly import AutoencoderDetector, VAEDetector  # torch only when needed
+
+        params.setdefault("random_state", seed)
+        return (AutoencoderDetector if kind == "autoencoder" else VAEDetector)(**params)
     raise ValueError(f"Unknown detector kind: {kind}")
 
 

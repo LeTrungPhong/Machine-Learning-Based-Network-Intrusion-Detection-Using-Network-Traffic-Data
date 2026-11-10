@@ -1,6 +1,6 @@
 % PHÁT HIỆN XÂM NHẬP MẠNG DỰA TRÊN HỌC MÁY SỬ DỤNG DỮ LIỆU LƯU LƯỢNG MẠNG
 % Machine Learning-Based Network Intrusion Detection Using Network Traffic Data
-% Báo cáo tiến độ — cập nhật đến STEP 7 (11/11/2026)
+% Báo cáo tiến độ — cập nhật đến STEP 8 (11/11/2026)
 
 <!--
 Nguồn của report.docx. Build lại bằng:  node scripts/build_report.js
@@ -15,7 +15,7 @@ kết quả trên dữ liệu tổng hợp chỉ được ghi là kiểm thử c
 
 Báo cáo trình bày quá trình xây dựng một hệ thống phát hiện xâm nhập mạng (NIDS) dựa trên học máy, đi từ gói tin thô trong file PCAP đến đặc trưng flow, đặc trưng host, dữ liệu huấn luyện chống rò rỉ và các mô hình phát hiện bất thường. Dữ liệu chính là CIC-IDS-2017 (5 ngày, 52 GB PCAP, 2.830.743 flow có nhãn). Bộ trích xuất gói tin và flow tương thích với CICFlowMeter khớp 100% với Scapy trên 100.000 gói tin kiểm thử và tái tạo được 97,85% flow của CIC trong ngày thứ Sáu.
 
-Ở STEP 6, mô hình Gaussian (đường chéo và hiệp phương sai đầy đủ) và Isolation Forest được huấn luyện chỉ trên traffic thứ Hai–thứ Tư và đánh giá trên thứ Năm–thứ Sáu, nơi cả 7 loại tấn công đều chưa từng xuất hiện khi huấn luyện. Mô hình tốt nhất (Gaussian hiệp phương sai đầy đủ) đạt ROC-AUC 0,909 và PR-AUC 0,576. Tuy vậy, với ngưỡng hiệu chỉnh để báo động sai trên benign của validation là 1%, recall trên test chỉ 6,6–9,6%: Bot và Infiltration được phát hiện một phần, còn Web Attack và PortScan gần như bị bỏ sót. Phân tích báo động sai cho thấy 45–59% số báo động sai trên test rơi vào đợt DDoS, nơi CIC gán nhầm các mảnh flow DDoS là BENIGN. Ở STEP 7, Random Forest và XGBoost được huấn luyện trên 65% flow sớm nhất của mỗi nhãn và kiểm tra trên 20% muộn nhất. Mô hình chọn theo validation (Random Forest + SMOTE) đạt macro-F1 0,774 trên 15 nhãn và 0,835 trên 8 nhóm tấn công. DoS, DDoS, PortScan và Brute Force đạt F1 ≥ 0,96, nhưng Bot có F1 bằng 0, vì flow Bot trong test giống hệt các flow tới cùng máy C2 mà CIC gán nhãn BENIGN. Các con số của STEP 7–12 trong phiên bản báo cáo ngày 06/11 được tính trên dữ liệu tổng hợp nên đã bị loại; STEP 8–12 sẽ được đánh giá lại trên dữ liệu thật.
+Ở STEP 6, mô hình Gaussian (đường chéo và hiệp phương sai đầy đủ) và Isolation Forest được huấn luyện chỉ trên traffic thứ Hai–thứ Tư và đánh giá trên thứ Năm–thứ Sáu, nơi cả 7 loại tấn công đều chưa từng xuất hiện khi huấn luyện. Mô hình tốt nhất (Gaussian hiệp phương sai đầy đủ) đạt ROC-AUC 0,909 và PR-AUC 0,576. Tuy vậy, với ngưỡng hiệu chỉnh để báo động sai trên benign của validation là 1%, recall trên test chỉ 6,6–9,6%: Bot và Infiltration được phát hiện một phần, còn Web Attack và PortScan gần như bị bỏ sót. Phân tích báo động sai cho thấy 45–59% số báo động sai trên test rơi vào đợt DDoS, nơi CIC gán nhầm các mảnh flow DDoS là BENIGN. Ở STEP 7, Random Forest và XGBoost được huấn luyện trên 65% flow sớm nhất của mỗi nhãn và kiểm tra trên 20% muộn nhất. Mô hình chọn theo validation (Random Forest + SMOTE) đạt macro-F1 0,774 trên 15 nhãn và 0,835 trên 8 nhóm tấn công. DoS, DDoS, PortScan và Brute Force đạt F1 ≥ 0,96, nhưng Bot có F1 bằng 0, vì flow Bot trong test giống hệt các flow tới cùng máy C2 mà CIC gán nhãn BENIGN. Ở STEP 8, Autoencoder và VAE học từ benign trên cùng thiết lập với STEP 6 đạt recall 28–31% ở cùng ngưỡng FPR 1% (gấp ba lần STEP 6), chủ yếu nhờ phát hiện khoảng một nửa số flow DDoS. Các con số của STEP 7–12 trong phiên bản báo cáo ngày 06/11 được tính trên dữ liệu tổng hợp nên đã bị loại; STEP 9–12 sẽ được đánh giá lại trên dữ liệu thật.
 
 **Từ khoá:** phát hiện xâm nhập, học máy, phát hiện bất thường, CIC-IDS-2017, trích xuất flow, rò rỉ dữ liệu.
 
@@ -36,7 +36,7 @@ Hệ thống phát hiện xâm nhập dựa trên chữ ký (signature-based) ch
 
 ## 1.3. Phạm vi của bản cập nhật này
 
-Bản này mô tả STEP 1–7: môi trường, khung phần mềm, trích xuất gói tin, tái tạo flow và đặc trưng host, làm sạch dữ liệu, EDA, chia dữ liệu, tiền xử lý, gán nhãn (mục 2–6) và phát hiện bất thường (mục 7) và phân loại có giám sát (mục 8). Mục 9 ghi lại các module của STEP 8–12 đã có code nhưng chưa được đánh giá trên dữ liệu thật.
+Bản này mô tả STEP 1–8: môi trường, khung phần mềm, trích xuất gói tin, tái tạo flow và đặc trưng host, làm sạch dữ liệu, EDA, chia dữ liệu, tiền xử lý, gán nhãn (mục 2–6) và phát hiện bất thường (mục 7), phân loại có giám sát (mục 8) và phát hiện bất thường bằng học sâu (mục 9). Mục 10 ghi lại các module của STEP 9–12 đã có code nhưng chưa được đánh giá trên dữ liệu thật.
 
 # 2. Dữ liệu
 
@@ -421,7 +421,7 @@ Khung DDoS chỉ chứa 48.858 flow BENIGN (6,4% số flow BENIGN của test), n
 5. **Chọn ngưỡng bằng tấn công đã biết không chuyển sang được tấn công mới.** Với `gaussian_diag`, ngưỡng `best_f1_val` đạt recall 95% trên DoS của validation nhưng chỉ 12,9% trên test. Chính sách dựa trên benign (`fpr@X`) trung thực hơn cho bài toán này.
 6. **Phạm vi kết luận.** Train và test đến từ cùng một mạng lab, chỉ khác ngày. Kết quả vì vậy đo khả năng phát hiện *loại tấn công chưa thấy trong cùng môi trường*, không phải khả năng phát hiện zero-day trong mạng thật.
 
-Các kết quả này thay thế các con số của STEP 6 ở phiên bản báo cáo trước (Accuracy 99,84%, F1 99,77% cho Gaussian), vốn được tính trên 25.000 flow tổng hợp chứ không phải CIC-IDS-2017 (xem mục 9).
+Các kết quả này thay thế các con số của STEP 6 ở phiên bản báo cáo trước (Accuracy 99,84%, F1 99,77% cho Gaussian), vốn được tính trên 25.000 flow tổng hợp chứ không phải CIC-IDS-2017 (xem mục 10).
 
 **Kiểm thử phần mềm:** thêm 13 test cho STEP 6, gồm: so khớp log-likelihood với `scipy.stats.multivariate_normal`; tính điểm theo khối cho kết quả giống hệt; xử lý cột hằng; ngưỡng FPR không bao giờ vượt mục tiêu, kể cả khi có điểm trùng nhau; lưu và tải mô hình. Một lỗi tiềm ẩn từ STEP 5 cũng được sửa: hàm `signed_log1p` bị pickle dưới tên `__main__` nên bộ tiền xử lý không tải được từ script khác. Hàm này đã được chuyển sang `preprocessing/transforms.py`; ba bộ tiền xử lý được fit lại và cho schema giống hệt bản cũ. Toàn bộ 109 test đều đạt.
 
@@ -435,10 +435,10 @@ STEP 7 đo khả năng **phân loại các loại tấn công đã biết** khi 
 - **Đặc trưng:** bộ tiền xử lý `temporal_per_class` fit trên tập train, cho 83 đặc trưng (47 đặc trưng số sau khi bỏ 21 đặc trưng tương quan, cộng one-hot của cổng đích và giao thức). Ma trận được lưu dạng memmap như ở STEP 6.
 - **Mô hình:**
   - Random Forest: 100 cây, `max_features = sqrt`, mỗi cây học trên mẫu bootstrap 30% để giới hạn RAM;
-  - XGBoost (`hist`): `max_depth = 8`, `learning_rate = 0.1`, `subsample = colsample_bytree = 0.8`, tối đa 1.000 vòng, dừng sớm sau 30 vòng không cải thiện mlogloss trên validation.
+  - XGBoost [7] (`hist`): `max_depth = 8`, `learning_rate = 0.1`, `subsample = colsample_bytree = 0.8`, tối đa 1.000 vòng, dừng sớm sau 30 vòng không cải thiện mlogloss trên validation.
 - **Xử lý mất cân bằng**, mỗi mô hình thử hai cách và không bao giờ dùng cả hai cùng lúc:
   - `weighted`: trọng số mỗi dòng bằng n/(k·n_c), tương đương "balanced" của scikit-learn. Trọng số trải từ 0,08 (BENIGN) đến 15.464 (Heartbleed);
-  - `smote`: SMOTE chỉ trên tập train, nâng 11 lớp có dưới 50.000 flow lên khoảng 50.000, tức thêm 527.784 dòng tổng hợp. SMOTE chỉ được fit trên các dòng của những lớp cần tăng, vì nó chỉ nội suy giữa các láng giềng cùng lớp.
+  - `smote`: SMOTE [8] chỉ trên tập train, nâng 11 lớp có dưới 50.000 flow lên khoảng 50.000, tức thêm 527.784 dòng tổng hợp. SMOTE chỉ được fit trên các dòng của những lớp cần tăng, vì nó chỉ nội suy giữa các láng giềng cùng lớp.
 - **Chọn mô hình theo macro-F1 trên validation.** Tập test chỉ được dùng một lần để báo cáo. Chỉ số gồm:
   - macro-F1 trên 15 nhãn và trên 8 nhóm tấn công (`label_group`);
   - weighted-F1, accuracy, balanced accuracy;
@@ -515,7 +515,91 @@ Flow Bot trong test là các kết nối không mang dữ liệu, và gần như
 
 **Kiểm thử phần mềm:** thêm 7 test cho STEP 7 (trọng số lớp, SMOTE chỉ tăng lớp nhỏ và nội suy trong lớp, huấn luyện/dự đoán/lưu/tải RF và XGBoost, chỉ số đa lớp và theo nhóm). Một test đã bắt được lỗi ghi tràn ở khối cuối khi tạo file SMOTE. Ngoài ra, chúng tôi phát hiện class `FittedPreprocessor` cũng bị pickle dưới tên `__main__` như hàm `signed_log1p` ở STEP 6. Mọi entry point có lưu mô hình nay import lại chính module của mình, và `FittedPreprocessor.save` từ chối lưu nếu class thuộc `__main__`. Ba bộ tiền xử lý được fit lại; ma trận đặc trưng của STEP 6 dựng lại giống hệt từng byte. `main.py --mode check` coi PCAP là tuỳ chọn, vì các bước từ STEP 5 trở đi không đọc PCAP. Toàn bộ 118 test đều đạt.
 
-# 9. Các module chưa được đánh giá trên dữ liệu thật (STEP 8–12)
+# 9. Phát hiện bất thường bằng học sâu (STEP 8)
+
+## 9.1. Thiết lập thực nghiệm
+
+STEP 8 kiểm tra xem mô hình học sâu chỉ học từ traffic bình thường có phát hiện tấn công chưa thấy tốt hơn Gaussian và Isolation Forest của STEP 6 hay không. Để so sánh trực tiếp, STEP 8 dùng **đúng thiết lập của STEP 6**: cùng split `by_day`, cùng ma trận 82 đặc trưng đã lưu, cùng cách chọn ngưỡng trên validation và cùng các chỉ số đánh giá. Mã nguồn nằm ở `models/deep_anomaly.py`; script `models/train_anomaly.py` được mở rộng để chạy theo mục `models.deep_anomaly` trong `config.yaml`, mục này kế thừa mọi thiết lập của `models.anomaly`.
+
+- **Autoencoder:** mạng kết nối đầy đủ 82 → 64 → 32 → 16 → 32 → 64 → 82, hàm kích hoạt ReLU. Hàm mất mát và điểm bất thường là sai số tái tạo bình phương trung bình của mỗi flow.
+- **VAE** [6]: bộ mã hoá 82 → 64 → 32 → (μ, log σ²) với không gian ẩn 16 chiều; bộ giải mã đối xứng. Hàm mất mát là âm ELBO (sai số tái tạo + β·KL, β = 1). Điểm bất thường là âm ELBO tính với z = μ, nên kết quả tất định.
+- **Huấn luyện:** Adam (lr = 10⁻³), batch 1.024, tối đa 30 epoch, trên 1.035.970 flow BENIGN của train. Dừng sớm sau 3 epoch không cải thiện loss trên 100.000 flow **BENIGN** của validation; mô hình không bao giờ thấy nhãn tấn công. Đầu vào được cắt về [−20, 20], nhưng trên dữ liệu này giá trị lớn nhất chỉ là 18,6 nên phép cắt không có tác dụng.
+- **So sánh:** hai mô hình tốt nhất của STEP 6 (`gaussian_full`, `iforest_benign`) được đưa vào bảng và biểu đồ làm tham chiếu, đọc từ kết quả đã lưu, không huấn luyện lại.
+
+## 9.2. Kết quả
+
+Bảng 14. Kết quả trên tập test thứ Năm–thứ Sáu (tấn công chưa thấy). Ngưỡng chọn trên validation; hai dòng cuối là STEP 6.
+
+| Mô hình | ROC-AUC | PR-AUC | Chính sách | Precision | Recall | F1 | FPR test |
+|---|---|---|---|---|---|---|---|
+| `autoencoder` | 0,905 | 0,591 | fpr@1% | 0,638 | **0,309** | **0,416** | 5,11% |
+| | | | best_f1_val | 0,635 | 0,321 | 0,427 | 5,37% |
+| `vae` | 0,881 | **0,600** | fpr@1% | 0,642 | 0,279 | 0,389 | 4,54% |
+| | | | best_f1_val | 0,713 | 0,495 | 0,584 | 5,79% |
+| `gaussian_full` (STEP 6) | 0,909 | 0,576 | fpr@1% | 0,447 | 0,066 | 0,115 | 2,38% |
+| `iforest_benign` (STEP 6) | 0,875 | 0,527 | fpr@1% | 0,526 | 0,096 | 0,162 | 2,51% |
+
+Ở chính sách `fpr@0,1%`, recall là 13,7% với Autoencoder và 5,5% với VAE (STEP 6: dưới 0,5%). Trên validation, ROC-AUC là 0,942 (Autoencoder) và 0,944 (VAE). Autoencoder chạy hết 30 epoch, loss validation vẫn còn giảm. VAE dừng sớm ở epoch 25, với epoch tốt nhất là 22. Thời gian huấn luyện là 136 s và 179 s trên CPU; thời gian tính điểm là 3,2 và 1,2 µs/flow.
+
+![Hình 12. Đường ROC của Autoencoder, VAE và hai mô hình tham chiếu của STEP 6 (màu xám).](../outputs/deep_anomaly/deep_anomaly_roc.png)
+
+Bảng 15. Tỉ lệ flow bị gắn cờ theo từng nhãn trong tập test, chính sách fpr@1% (dòng BENIGN là FPR).
+
+| Nhãn | Số flow | `autoencoder` | `vae` | `gaussian_full` | `iforest_benign` |
+|---|---|---|---|---|---|
+| BENIGN | 764.221 | 5,1% | 4,5% | 2,4% | 2,5% |
+| DDoS | 128.013 | **51,4%** | 48,0% | 9,4% | 16,4% |
+| PortScan | 90.255 | 2,4% | 0,5% | 1,6% | 0,2% |
+| Bot | 1.953 | 29,0% | 2,3% | **64,1%** | 0,0% |
+| Web Attack - Brute Force | 1.470 | 4,7% | 1,1% | 0,0% | 0,0% |
+| Web Attack - XSS | 652 | 2,5% | 0,6% | 0,0% | 0,0% |
+| Infiltration | 36 | 88,9% | 72,2% | 30,6% | 69,4% |
+| Web Attack - Sql Injection | 21 | 0,0% | 0,0% | 0,0% | 0,0% |
+
+![Hình 13. Tỉ lệ flow bị gắn cờ theo nhãn, chính sách fpr@1%.](../outputs/deep_anomaly/deep_anomaly_per_label_detection.png)
+
+## 9.3. Báo động sai và lỗi nhãn DDoS
+
+FPR trên test của hai mô hình học sâu (4,5–5,1%) cao hơn hẳn mức 1% đã hiệu chỉnh. Phân tích như ở mục 7.3:
+
+- **Autoencoder:** FPR thứ Năm 1,41%, thứ Sáu 9,00%; trong khung DDoS 59,1%, ngoài khung 1,42%. Nó gắn cờ **90,8%** số flow BENIGN có nguồn là máy nạn nhân, và 74,0% số báo động sai nằm trong khung DDoS.
+- **VAE:** FPR thứ Năm 1,10%, thứ Sáu 8,16%; trong khung DDoS 55,5%, ngoài khung 1,06%. Nó gắn cờ 85,5% số flow BENIGN có nguồn là máy nạn nhân, và 78,2% số báo động sai nằm trong khung DDoS.
+
+Nói cách khác, hai mô hình này phát hiện traffic DDoS ở **cả hai chiều**, kể cả các mảnh mà CIC gán nhầm là BENIGN. Ngoài khung DDoS, FPR vẫn bám sát mức 1%.
+
+Để định lượng ảnh hưởng của lỗi nhãn, chúng tôi làm một **phân tích độ nhạy**: coi 31.535 flow BENIGN có nguồn là máy nạn nhân trong khung DDoS là DDoS, rồi tính lại các chỉ số với cùng ngưỡng. Kết quả chính ở Bảng 14 vẫn dùng nhãn gốc của CIC.
+
+Bảng 16. Phân tích độ nhạy (fpr@1%): các mảnh DDoS mà máy nạn nhân là nguồn được tính là tấn công.
+
+| Mô hình | Precision | Recall | F1 | FPR |
+|---|---|---|---|---|
+| `autoencoder` | 0,903 | 0,383 | 0,538 | 1,42% |
+| `vae` | 0,920 | 0,350 | 0,508 | 1,05% |
+| `gaussian_full` (STEP 6) | 0,689 | 0,089 | 0,158 | 1,40% |
+| `iforest_benign` (STEP 6) | 0,802 | 0,128 | 0,220 | 1,09% |
+
+## 9.4. Thảo luận
+
+1. **Học sâu cải thiện rõ ở mức báo động sai thấp.** Ở cùng ngưỡng hiệu chỉnh FPR 1% trên benign của validation, recall tăng từ 7–10% (STEP 6) lên 28–31%. Với nhãn đã chỉnh cho các mảnh DDoS, F1 tăng từ ≤ 0,22 lên 0,51–0,54, và FPR giữ ở 1,0–1,4%. Phần lớn mức cải thiện đến từ DDoS (48–51% so với 9–16%) và Infiltration.
+2. **ROC-AUC che mất sự khác biệt này.** ROC-AUC của Autoencoder (0,905) gần như bằng `gaussian_full` (0,909). Khác biệt nằm ở vùng FPR thấp (Hình 12), là vùng có ý nghĩa vận hành. VAE có PR-AUC cao nhất (0,600). Một lần nữa, cần báo cáo recall ở FPR cố định chứ không chỉ AUC.
+3. **Các mô hình bổ sung cho nhau.** Gaussian hiệp phương sai đầy đủ phát hiện Bot tốt nhất (64%), Autoencoder và VAE mạnh ở DDoS, Infiltration được nhiều mô hình phát hiện. Không có mô hình nào trội hơn ở mọi loại tấn công, nên STEP 10 sẽ thử kết hợp.
+4. **Web Attack và PortScan vẫn gần như không bị phát hiện** (≤ 5%). Cũng như ở STEP 6, ở mức từng flow các tấn công này nằm trong phân bố của traffic bình thường. Cần đặc trưng mức host hoặc mức chuỗi để phát hiện chúng.
+5. **Chưa tinh chỉnh.** Autoencoder dừng ở giới hạn 30 epoch khi loss validation vẫn còn giảm, nên có thể còn cải thiện. Kiến trúc và β của VAE cũng chưa được dò. Mọi tinh chỉnh sau này chỉ được dựa trên validation, không dựa trên test.
+6. **Chi phí:** huấn luyện 2–3 phút trên CPU và tính điểm 1,2–3,2 µs/flow, đủ nhanh cho chế độ thời gian thực.
+
+Các kết quả này thay thế con số Autoencoder ở phiên bản báo cáo ngày 06/11 (Accuracy 98,40%, F1 97,71%), vốn được tính trên dữ liệu tổng hợp với cách chia ngẫu nhiên.
+
+**Kiểm thử phần mềm:** thêm 6 test cho STEP 8:
+- Autoencoder và VAE cho điểm cao hơn với dữ liệu nằm ngoài đa tạp của benign;
+- dừng sớm giữ lại trọng số của epoch tốt nhất;
+- huấn luyện và tính điểm tất định theo seed, không phụ thuộc kích thước khối khi tính điểm;
+- lưu và tải mô hình;
+- điểm ELBO luôn ≥ điểm tái tạo;
+- mục config kế thừa từ `models.anomaly` đúng cách.
+
+Chạy lại STEP 6 bằng script đã mở rộng cho chỉ số giống hệt bản đã commit. Toàn bộ 124 test đều đạt.
+
+# 10. Các module chưa được đánh giá trên dữ liệu thật (STEP 9–12)
 
 Commit ngày 06/11/2026 đã thêm các module sau:
 
@@ -525,7 +609,7 @@ Commit ngày 06/11/2026 đã thêm các module sau:
 - `realtime/monitor.py` và `realtime/attack_simulator.py`;
 - notebook `models/model_training.ipynb` (Autoencoder, MLP).
 
-STEP 6 và STEP 7 đã được làm lại trên dữ liệu thật (mục 7 và 8) bằng các module mới; các module dưới đây vẫn chưa được đánh giá lại.
+STEP 6, 7 và 8 đã được làm lại trên dữ liệu thật (mục 7, 8 và 9) bằng các module mới; notebook này không còn được dùng cho kết quả. Các module còn lại vẫn chưa được đánh giá lại.
 
 Kiểm tra lại cho thấy mọi con số mà phiên bản báo cáo ngày 06/11 trình bày cho STEP 7–12 đều được tính trên **dữ liệu tổng hợp do chính các module này sinh ra**, không phải trên CIC-IDS-2017 hay CTU-13:
 
@@ -540,17 +624,16 @@ Vì vậy các kết quả như "F1 100%", "bắt 100% Zero-Day" hay "nhận di�
 - pipeline chọn ngưỡng Gaussian trên tập train có lẫn tấn công;
 - monitor thời gian thực gán 0 cho các đặc trưng không có trong schema, và dùng timeout flow 15 s thay vì 120 s như khi huấn luyện.
 
-# 10. Kế hoạch các bước tiếp theo
+# 11. Kế hoạch các bước tiếp theo
 
-- **STEP 8 — Deep learning:** Autoencoder và VAE trên cùng thiết lập `by_day` và cùng cache đặc trưng như STEP 6, để so sánh trực tiếp với Bảng 8.
 - **STEP 9 — Botnet bằng đồ thị:** tải CTU-13, chạy `graph/botnet_graph.py` trên `.binetflow` thật, đánh giá theo từng kịch bản. Chỉ kết luận về cấu trúc tập trung hay P2P nếu dữ liệu cho thấy.
-- **STEP 10 — So sánh và ablation:** so sánh chia ngẫu nhiên với chia theo thời gian; ablation `init_win_bytes_*` và `dst_port` cho cả mô hình STEP 6 và STEP 7; đánh giá pipeline kết hợp trên dữ liệu thật. Có thể bổ sung đặc trưng host (mục 3.4) cho PortScan và Bot, hai loại mà mô hình mức flow bỏ sót (PortScan ở STEP 6, Bot ở STEP 7).
+- **STEP 10 — So sánh và ablation:** so sánh chia ngẫu nhiên với chia theo thời gian; ablation `init_win_bytes_*` và `dst_port` cho cả mô hình STEP 6 và STEP 7; đánh giá pipeline kết hợp trên dữ liệu thật, trong đó có kết hợp các detector bổ sung cho nhau (Gaussian cho Bot, Autoencoder/VAE cho DDoS). Có thể bổ sung đặc trưng host (mục 3.4) cho PortScan và Bot, hai loại mà mô hình mức flow bỏ sót (PortScan ở STEP 6, Bot ở STEP 7).
 - **STEP 11 — Thời gian thực:** huấn luyện mô hình trên flow tự trích đã gán nhãn (mục 4.8) để schema giống hệt lúc chạy thực tế; thống nhất timeout; thử trên Kali trong mạng lab cô lập; mặc định không chặn IP.
 - **STEP 12 — Hoàn thiện:** sửa các test hiện đang ghi đè `outputs/` và `saved_models/`; viết tài liệu và báo cáo cuối.
 
-# 11. Kết luận (tạm thời)
+# 12. Kết luận (tạm thời)
 
-Đến STEP 6, dự án có một pipeline tái lập được từ PCAP tới dữ liệu huấn luyện, đã được kiểm chứng với Scapy và với CIC, cùng một đánh giá trung thực đầu tiên cho bài toán phát hiện bất thường trên tấn công chưa thấy. Kết quả cho thấy mô hình Gaussian với hiệp phương sai đầy đủ và Isolation Forest học từ benign xếp hạng tấn công khá tốt (ROC-AUC 0,88–0,91), nhưng ở mức báo động sai 1% chỉ phát hiện được 7–10% flow tấn công chưa thấy, và hầu như bỏ sót Web Attack và PortScan. Khoảng một nửa số báo động sai đo được trên test là do lỗi nhãn DDoS của CIC-IDS-2017. Ở STEP 7, Random Forest và XGBoost phân loại tốt các tấn công đã biết khi kiểm tra trên flow muộn hơn (F1 ≥ 0,96 cho DoS, DDoS, PortScan và Patator; macro-F1 theo nhóm 0,84 với mô hình chọn theo validation). Tuy vậy, Bot bị bỏ sót hoàn toàn, vì flow Bot trong test giống hệt các flow mà CIC gán nhãn BENIGN. Chênh lệch FPR giữa class weight và SMOTE phần lớn phản ánh lỗi nhãn DDoS, không phải chất lượng mô hình. Các bước tiếp theo sẽ kiểm tra autoencoder, đặc trưng mức host và mức phụ thuộc vào đặc trưng của môi trường lab.
+Đến STEP 6, dự án có một pipeline tái lập được từ PCAP tới dữ liệu huấn luyện, đã được kiểm chứng với Scapy và với CIC, cùng một đánh giá trung thực đầu tiên cho bài toán phát hiện bất thường trên tấn công chưa thấy. Kết quả cho thấy mô hình Gaussian với hiệp phương sai đầy đủ và Isolation Forest học từ benign xếp hạng tấn công khá tốt (ROC-AUC 0,88–0,91), nhưng ở mức báo động sai 1% chỉ phát hiện được 7–10% flow tấn công chưa thấy, và hầu như bỏ sót Web Attack và PortScan. Khoảng một nửa số báo động sai đo được trên test là do lỗi nhãn DDoS của CIC-IDS-2017. Ở STEP 7, Random Forest và XGBoost phân loại tốt các tấn công đã biết khi kiểm tra trên flow muộn hơn (F1 ≥ 0,96 cho DoS, DDoS, PortScan và Patator; macro-F1 theo nhóm 0,84 với mô hình chọn theo validation). Tuy vậy, Bot bị bỏ sót hoàn toàn, vì flow Bot trong test giống hệt các flow mà CIC gán nhãn BENIGN. Chênh lệch FPR giữa class weight và SMOTE phần lớn phản ánh lỗi nhãn DDoS, không phải chất lượng mô hình. Ở STEP 8, Autoencoder và VAE học từ benign nâng recall trên tấn công chưa thấy ở FPR 1% từ 7–10% lên 28–31%, chủ yếu nhờ phát hiện DDoS; Web Attack và PortScan vẫn bị bỏ sót. Các bước tiếp theo sẽ kiểm tra đặc trưng mức host, kết hợp các detector và mức phụ thuộc vào đặc trưng của môi trường lab.
 
 # Tài liệu tham khảo
 
@@ -563,3 +646,9 @@ Vì vậy các kết quả như "F1 100%", "bắt 100% Zero-Day" hay "nhận di�
 [4] F. T. Liu, K. M. Ting, Z.-H. Zhou, "Isolation Forest," in *Proc. IEEE ICDM*, 2008, pp. 413–422.
 
 [5] F. Pedregosa et al., "Scikit-learn: Machine Learning in Python," *Journal of Machine Learning Research*, vol. 12, pp. 2825–2830, 2011.
+
+[6] D. P. Kingma, M. Welling, "Auto-Encoding Variational Bayes," in *Proc. Int. Conf. on Learning Representations (ICLR)*, 2014.
+
+[7] T. Chen, C. Guestrin, "XGBoost: A Scalable Tree Boosting System," in *Proc. ACM SIGKDD*, 2016, pp. 785–794.
+
+[8] N. V. Chawla, K. W. Bowyer, L. O. Hall, W. P. Kegelmeyer, "SMOTE: Synthetic Minority Over-sampling Technique," *Journal of Artificial Intelligence Research*, vol. 16, pp. 321–357, 2002.

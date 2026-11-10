@@ -1,5 +1,6 @@
 {
   "setup": {
+    "section": "anomaly",
     "split": "by_day",
     "preprocessor": "cicids2017_by_day_benign.joblib",
     "features": 82,
@@ -281,9 +282,9 @@
         "min_variance": 0.001,
         "covariance": "diag"
       },
-      "fit_seconds": 1.075165599992033,
-      "score_seconds_test": 1.4152690000191797,
-      "score_us_per_flow": 1.4344606490427223
+      "fit_seconds": 0.9772195999976248,
+      "score_seconds_test": 1.620696300000418,
+      "score_us_per_flow": 1.6426736305029166
     },
     "gaussian_full": {
       "ranking_test": {
@@ -535,9 +536,9 @@
         "min_variance": 0.001,
         "covariance": "full"
       },
-      "fit_seconds": 1.7661910000024363,
-      "score_seconds_test": 4.375791900005424,
-      "score_us_per_flow": 4.435129497553189
+      "fit_seconds": 1.6718618999584578,
+      "score_seconds_test": 3.8504015000071377,
+      "score_us_per_flow": 3.902614580479371
     },
     "iforest_benign": {
       "ranking_test": {
@@ -790,9 +791,9 @@
         "max_samples": 256,
         "max_features": 1.0
       },
-      "fit_seconds": 2.9540387999732047,
-      "score_seconds_test": 19.556829999986803,
-      "score_us_per_flow": 19.82202892497403
+      "fit_seconds": 3.3255267000058666,
+      "score_seconds_test": 10.498688000021502,
+      "score_us_per_flow": 10.641054670457555
     },
     "iforest_all": {
       "ranking_test": {
@@ -1045,9 +1046,9 @@
         "max_samples": 256,
         "max_features": 1.0
       },
-      "fit_seconds": 1.3958225999958813,
-      "score_seconds_test": 20.49158709999756,
-      "score_us_per_flow": 20.76946172846266
+      "fit_seconds": 0.7682263999595307,
+      "score_seconds_test": 10.091557300009299,
+      "score_us_per_flow": 10.228403105153143
     }
   }
 }

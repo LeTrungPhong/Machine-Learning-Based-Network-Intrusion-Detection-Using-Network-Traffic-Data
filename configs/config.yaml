@@ -222,8 +222,35 @@ models:
     n_estimators: 200
     max_samples: 256
     max_features: 1.0
-  autoencoder: {}
-  vae: {}
+  # STEP 8 - deep anomaly detection (python -m models.train_anomaly --section deep_anomaly)
+  deep_anomaly:
+    base: anomaly                         # same split, feature cache, thresholds and target FPRs as STEP 6
+    models_dir: "saved_models/deep_anomaly"
+    output_dir: "outputs/deep_anomaly"
+    variants:
+      - {name: autoencoder, kind: autoencoder, fit_on: benign, params: {}}
+      - {name: vae, kind: vae, fit_on: benign, params: {}}
+    reference_models: {section: anomaly, models: [gaussian_full, iforest_benign]}
+  autoencoder:                            # 82 -> 64 -> 32 -> 16 -> 32 -> 64 -> 82, ReLU, MSE
+    hidden: [64, 32]
+    latent: 16
+    epochs: 30                            # upper bound; early stopping on benign validation loss
+    patience: 3
+    batch_size: 1024
+    lr: 0.001
+    val_rows: 100000                      # benign validation rows used for early stopping
+    clip: 20.0                            # inputs clipped to [-20, 20] scaled units
+  vae:
+    hidden: [64, 32]
+    latent: 16
+    beta: 1.0                             # KL weight
+    score_mode: "elbo"                    # elbo | recon
+    epochs: 30
+    patience: 3
+    batch_size: 1024
+    lr: 0.001
+    val_rows: 100000
+    clip: 20.0
   # STEP 7 - supervised multi-class classification (python -m models.train_supervised)
   supervised:
     split: temporal_per_class             # per class: earliest 65% train, next 15% val, latest 20% test

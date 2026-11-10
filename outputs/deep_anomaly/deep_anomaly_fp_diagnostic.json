@@ -1,0 +1,58 @@
+{
+  "policy": "fpr@0.01",
+  "ddos_window_utc": [
+    "2017-07-07 18:56:00+00:00",
+    "2017-07-07 19:16:00+00:00"
+  ],
+  "benign_test_rows": 764221,
+  "benign_in_ddos_window": 48858,
+  "benign_in_window_victim_as_source": 31535,
+  "models": {
+    "autoencoder": {
+      "fpr_overall": 0.05105722035903227,
+      "fpr_by_day": {
+        "Friday": 0.08996129253928459,
+        "Thursday": 0.014054733036664853
+      },
+      "fpr_in_ddos_window": 0.5906709239019199,
+      "fpr_victim_as_source": 0.9076581576026637,
+      "fpr_outside_window": 0.014202579669342697,
+      "share_of_false_positives_in_window": 0.7396140341884723,
+      "sensitivity_victim_source_as_ddos": {
+        "threshold": 0.01791578903794289,
+        "tp": 97278,
+        "fp": 10396,
+        "fn": 156657,
+        "tn": 722290,
+        "precision": 0.9034493006668276,
+        "recall": 0.3830822848366708,
+        "f1": 0.538028644198568,
+        "fpr": 0.014188888555261053,
+        "accuracy": 0.8306816903349918
+      }
+    },
+    "vae": {
+      "fpr_overall": 0.04537300074193198,
+      "fpr_by_day": {
+        "Friday": 0.08155409649485422,
+        "Thursday": 0.01096039399208033
+      },
+      "fpr_in_ddos_window": 0.5547505014531908,
+      "fpr_victim_as_source": 0.854859679720945,
+      "fpr_outside_window": 0.010583438058719839,
+      "share_of_false_positives_in_window": 0.7816582552271089,
+      "sensitivity_victim_source_as_ddos": {
+        "threshold": 0.24748085439205172,
+        "tp": 88993,
+        "fp": 7717,
+        "fn": 164942,
+        "tn": 724969,
+        "precision": 0.920204735808086,
+        "recall": 0.3504558253096265,
+        "f1": 0.5075960016540946,
+        "fpr": 0.01053247912475467,
+        "accuracy": 0.8249996705928619
+      }
+    }
+  }
+}

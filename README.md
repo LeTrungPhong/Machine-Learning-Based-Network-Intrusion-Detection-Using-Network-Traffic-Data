@@ -26,7 +26,7 @@ Dataset chính: **CIC-IDS-2017** (PCAP gốc + CSV có nhãn). Dataset botnet: *
 | 5 | Làm sạch CSV, EDA, chia dữ liệu, tiền xử lý, gán nhãn flow | Xong |
 | 6 | Phát hiện bất thường: Gaussian, Isolation Forest (trên CIC-IDS-2017, split `by_day`) | Xong |
 | 7 | Phân loại có giám sát: Random Forest, XGBoost (trên CIC-IDS-2017, split `temporal_per_class`) | Xong |
-| 8 | Deep learning: Autoencoder / VAE | Có code (Autoencoder), chưa đánh giá trên dữ liệu thật; chưa có VAE |
+| 8 | Deep learning: Autoencoder, VAE (trên CIC-IDS-2017, split `by_day`) | Xong |
 | 9 | Phát hiện botnet bằng đồ thị (CTU-13) | Có code, chưa tải CTU-13 |
 | 10 | So sánh mô hình, ablation, pipeline kết hợp | Có code, chưa đánh giá trên dữ liệu thật |
 | 11 | Phát hiện thời gian thực trên Kali | Có code, chưa thử trên mạng lab |
@@ -34,7 +34,7 @@ Dataset chính: **CIC-IDS-2017** (PCAP gốc + CSV có nhãn). Dataset botnet: *
 
 > Các con số của STEP 7–12 mà commit `57b0bad` đưa vào README và báo cáo được tính trên **dữ liệu tổng hợp**
 > (`generate_multistage_benchmark_data`, `generate_synthetic_botnet_flows`), không phải CIC-IDS-2017 hay CTU-13.
-> Vì vậy chúng đã bị gỡ khỏi phần kết quả; STEP 6–7 đã được làm lại trên dữ liệu thật (xem mục 7–9 của báo cáo).
+> Vì vậy chúng đã bị gỡ khỏi phần kết quả; STEP 6–8 đã được làm lại trên dữ liệu thật (xem mục 7–10 của báo cáo).
 
 ---
 
@@ -61,7 +61,8 @@ ATTT_Project/
 │   └── visualization.py       # hàm vẽ dùng chung
 ├── models/
 │   ├── anomaly.py             # STEP 6: Gaussian (diag/full) và Isolation Forest
-│   ├── train_anomaly.py       # STEP 6: huấn luyện, chọn ngưỡng, đánh giá trên CIC
+│   ├── train_anomaly.py       # STEP 6/8: huấn luyện, chọn ngưỡng, đánh giá trên CIC (--section)
+│   ├── deep_anomaly.py        # STEP 8: Autoencoder và VAE (PyTorch)
 │   ├── supervised.py          # STEP 7: Random Forest / XGBoost, class weight, SMOTE
 │   ├── train_supervised.py    # STEP 7: huấn luyện, chọn mô hình theo validation, đánh giá trên CIC
 │   ├── feature_cache.py       # cache ma trận đặc trưng đã biến đổi (.npy memmap), dùng chung
@@ -77,7 +78,7 @@ ATTT_Project/
 │   └── attack_simulator.py    # Mô phỏng tấn công (PortScan, DoS Flood, Botnet C2, Zero-Day) & đo độ trễ
 ├── scripts/                   # kiểm tra dataset, kiểm chứng parser, build notebook & báo cáo Word
 ├── tests/                     # pytest (kiểm thử toàn diện từ gói tin đến đồ thị và realtime)
-├── outputs/                   # eda/, validation/, anomaly/ (STEP 6), supervised/ (STEP 7), botnet_graph/, evaluation/, alerts/
+├── outputs/                   # eda/, validation/, anomaly/ (STEP 6), supervised/ (STEP 7), deep_anomaly/ (STEP 8), botnet_graph/, evaluation/, alerts/
 ├── docs/report.md             # nguồn của báo cáo khoa học
 └── report.docx                # báo cáo khoa học (Word)
 ```
@@ -199,7 +200,21 @@ python scripts/supervised_error_diagnostic.py
 Kết quả nằm ở `outputs/supervised/`: bảng tổng hợp, F1/precision/recall theo nhãn và theo nhóm, ma trận nhầm lẫn,
 mức độ quan trọng của đặc trưng và phân tích lỗi. Chạy một phần: `--only rf_weighted xgb_weighted`.
 
-### Các module STEP 8–12 (mới kiểm thử chức năng trên dữ liệu tổng hợp)
+### STEP 8: Autoencoder và VAE trên CIC-IDS-2017
+
+Dùng lại cache đặc trưng của STEP 6 và kết quả STEP 6 làm tham chiếu (chạy STEP 6 trước). Mất khoảng 5 phút trên CPU.
+
+```bash
+python -m models.train_anomaly --section deep_anomaly
+```
+
+```bash
+python scripts/anomaly_fp_diagnostic.py --section deep_anomaly
+```
+
+Kết quả nằm ở `outputs/deep_anomaly/`.
+
+### Các module STEP 9–12 (mới kiểm thử chức năng trên dữ liệu tổng hợp)
 
 Các lệnh dưới đây chạy được, nhưng mặc định dùng dữ liệu tổng hợp hoặc mô hình huấn luyện trên dữ liệu tổng hợp.
 Số liệu chúng in ra **không phải kết quả trên CIC-IDS-2017 / CTU-13**.
@@ -297,8 +312,14 @@ python scripts/compare_flows_with_cic.py --flows processed/flows/Friday-WorkingH
   - biến thể class weight đoán 6,7–11,4 nghìn flow "BENIGN" thành DDoS; 99,9% trong số đó là mảnh DDoS
     mà CIC gán nhầm nhãn.
 
-### STEP 8: Deep learning (`models/model_training.ipynb`, mới kiểm thử trên dữ liệu tổng hợp)
-- **Deep Learning (STEP 8):** Mạng **Deep Autoencoder** phát hiện bất thường qua sai số tái tạo (Reconstruction MSE) và **Deep MLP Classifier** phân loại đa lớp với `BatchNorm1d`, `Dropout` và trọng số lớp.
+### STEP 8: Phát hiện bất thường bằng học sâu (`models/deep_anomaly.py`)
+- Autoencoder (82-64-32-16) và VAE (latent 16, β = 1), chỉ học trên BENIGN thứ Hai–Tư, dừng sớm theo loss
+  trên benign của validation. Cùng split, đặc trưng và cách chọn ngưỡng như STEP 6.
+- Ở FPR 1% (chỉnh trên validation): recall 30,9% (Autoencoder), 27,9% (VAE), so với 6,6–9,6% ở STEP 6;
+  DDoS bị phát hiện 48–51%, Infiltration 72–89%; Web Attack và PortScan vẫn ≤ 5%.
+- FPR trên test 4,5–5,1%, chủ yếu do các mảnh DDoS mà CIC gán nhầm là BENIGN (mô hình gắn cờ 85–91% số
+  mảnh đó). Ngoài khung DDoS, FPR là 1,1–1,4%. Nếu tính đúng các mảnh đó là tấn công, F1 đạt 0,51–0,54.
+- Notebook `models/model_training.ipynb` (Autoencoder/MLP trên dữ liệu tổng hợp) không còn dùng cho kết quả.
 
 ### STEP 9: Phát hiện Botnet dựa trên Đồ thị Giao tiếp Mạng (`graph/botnet_graph.py`)
 - Xây dựng đồ thị có hướng $G = (V, E)$ từ bảng Flow hoặc file `.binetflow` của **CTU-13**.

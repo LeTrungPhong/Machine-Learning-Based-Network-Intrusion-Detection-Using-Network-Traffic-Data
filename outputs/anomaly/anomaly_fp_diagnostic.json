@@ -17,7 +17,19 @@
       "fpr_in_ddos_window": 0.00562855622415981,
       "fpr_victim_as_source": 0.0007927699381639448,
       "fpr_outside_window": 0.013581915754658823,
-      "share_of_false_positives_in_window": 0.027524772295065558
+      "share_of_false_positives_in_window": 0.027524772295065558,
+      "sensitivity_victim_source_as_ddos": {
+        "threshold": 152.13146644568982,
+        "tp": 2561,
+        "fp": 9966,
+        "fn": 251374,
+        "tn": 722720,
+        "precision": 0.2044384130278598,
+        "recall": 0.010085258038474413,
+        "f1": 0.019222253079238315,
+        "fpr": 0.013602006862421284,
+        "accuracy": 0.7351161185500815
+      }
     },
     "gaussian_full": {
       "fpr_overall": 0.02382426025979396,
@@ -28,7 +40,19 @@
       "fpr_in_ddos_window": 0.16844733718121904,
       "fpr_victim_as_source": 0.25286189947677185,
       "fpr_outside_window": 0.01394676548829056,
-      "share_of_false_positives_in_window": 0.4520239468336354
+      "share_of_false_positives_in_window": 0.4520239468336354,
+      "sensitivity_victim_source_as_ddos": {
+        "threshold": 121.87440212933981,
+        "tp": 22662,
+        "fp": 10233,
+        "fn": 231273,
+        "tn": 722453,
+        "precision": 0.6889192886456909,
+        "recall": 0.08924331029594187,
+        "f1": 0.15801694383432693,
+        "fpr": 0.013966419448440397,
+        "accuracy": 0.7552190760180454
+      }
     },
     "iforest_benign": {
       "fpr_overall": 0.025056887994441397,
@@ -39,7 +63,19 @@
       "fpr_in_ddos_window": 0.2315485693233452,
       "fpr_victim_as_source": 0.3542730299667037,
       "fpr_outside_window": 0.010953879359150528,
-      "share_of_false_positives_in_window": 0.5907880307065643
+      "share_of_false_positives_in_window": 0.5907880307065643,
+      "sensitivity_victim_source_as_ddos": {
+        "threshold": 0.5906466860801974,
+        "tp": 32411,
+        "fp": 7977,
+        "fn": 221524,
+        "tn": 724709,
+        "precision": 0.8024908388630286,
+        "recall": 0.1276350247110481,
+        "f1": 0.22024102771444976,
+        "fpr": 0.01088733782275081,
+        "accuracy": 0.7673868689192709
+      }
     },
     "iforest_all": {
       "fpr_overall": 0.020700818218813668,
@@ -50,7 +86,19 @@
       "fpr_in_ddos_window": 0.17356420647590978,
       "fpr_victim_as_source": 0.2650071349294435,
       "fpr_outside_window": 0.010260525076080256,
-      "share_of_false_positives_in_window": 0.5360303413400759
+      "share_of_false_positives_in_window": 0.5360303413400759,
+      "sensitivity_victim_source_as_ddos": {
+        "threshold": 0.5885272636770131,
+        "tp": 8609,
+        "fp": 7463,
+        "fn": 245326,
+        "tn": 725223,
+        "precision": 0.5356520657043305,
+        "recall": 0.03390237659243507,
+        "f1": 0.06376871710733424,
+        "fpr": 0.010185809473635364,
+        "accuracy": 0.7437830737436159
+      }
     }
   }
 }
