@@ -162,7 +162,7 @@
   "meta": {
     "sklearn": "1.9.1",
     "train_rows": 1035970,
-    "created": "2026-10-30T21:38:33",
+    "created": "2026-11-10T23:42:07",
     "strategy": "by_day",
     "fit_on": "benign"
   }

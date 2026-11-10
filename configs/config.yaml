@@ -77,6 +77,10 @@ datasets:
       Thursday: ["Thursday-WorkingHours-Morning-WebAttacks", "Thursday-WorkingHours-Afternoon-Infilteration"]
       Friday: ["Friday-WorkingHours-Morning", "Friday-WorkingHours-Afternoon-PortScan", "Friday-WorkingHours-Afternoon-DDos"]
     # Expected files and byte sizes, measured on 2026-10-30 from the downloaded copy.
+    # Missing files under these prefixes are warnings, not errors: the PCAPs are only read to
+    # (re-)extract packets/flows (STEP 3-4) and MachineLearningCVE only for the STEP 5 identity check.
+    # All later steps use processed/ (cleaned TrafficLabelling CSVs, flows, features).
+    optional_paths: ["pcaps/", "csvs/MachineLearningCSV/"]
     expected_files:
       "pcaps/Monday-WorkingHours.pcap": 10822507416
       "pcaps/Tuesday-WorkingHours.pcap": 11048283608
@@ -198,12 +202,56 @@ preprocessing:
 # Phase 5-8 - models (filled in during the corresponding steps)
 # -----------------------------------------------------------------------------
 models:
-  gaussian: {}
-  isolation_forest: {}
+  # STEP 6 - anomaly detection (python -m models.train_anomaly)
+  anomaly:
+    split: by_day                         # train Mon-Wed, test Thu-Fri (attack types unseen in training)
+    preprocessor: cicids2017_by_day_benign.joblib   # fitted on benign training flows only
+    features_dir: "processed/features/by_day_benign" # cached transformed matrices (.npy memmaps)
+    models_dir: "saved_models/anomaly"
+    output_dir: "outputs/anomaly"
+    target_fpr: [0.01, 0.001]             # thresholds calibrated on benign validation flows (first = primary)
+    unsupervised_sample_rows: 300000      # random training rows (benign + attack) for the fit_on=all variant
+    variants:                             # fit_on: benign = semi-supervised, all = unlabelled training rows
+      - {name: gaussian_diag, kind: gaussian, fit_on: benign, params: {covariance: diag}}
+      - {name: gaussian_full, kind: gaussian, fit_on: benign, params: {covariance: full}}
+      - {name: iforest_benign, kind: isolation_forest, fit_on: benign, params: {}}
+      - {name: iforest_all, kind: isolation_forest, fit_on: all, params: {}}
+  gaussian:
+    min_variance: 0.001                   # variance floor in scaled units (constant one-hot columns)
+  isolation_forest:
+    n_estimators: 200
+    max_samples: 256
+    max_features: 1.0
   autoencoder: {}
   vae: {}
-  random_forest: {}
-  xgboost: {}
+  # STEP 7 - supervised multi-class classification (python -m models.train_supervised)
+  supervised:
+    split: temporal_per_class             # per class: earliest 65% train, next 15% val, latest 20% test
+    preprocessor: cicids2017_temporal_per_class_all.joblib
+    features_dir: "processed/features/temporal_per_class_all"
+    models_dir: "saved_models/supervised"
+    output_dir: "outputs/supervised"
+    class_weight_power: 1.0               # row weight (n / (k * n_c)) ** power; 1.0 = sklearn "balanced"
+    smote_max_per_class: 50000            # SMOTE raises classes below this size to it (training split only)
+    variants:                             # imbalance: class_weight | smote (never both)
+      - {name: rf_weighted, kind: random_forest, imbalance: class_weight}
+      - {name: rf_smote, kind: random_forest, imbalance: smote}
+      - {name: xgb_weighted, kind: xgboost, imbalance: class_weight}
+      - {name: xgb_smote, kind: xgboost, imbalance: smote}
+  random_forest:
+    n_estimators: 100
+    max_features: "sqrt"
+    min_samples_leaf: 1
+    max_samples: 0.3                      # bootstrap fraction per tree; bounds tree size and RAM
+  xgboost:
+    n_estimators: 1000                    # upper bound; early stopping on weighted validation mlogloss
+    early_stopping_rounds: 30
+    learning_rate: 0.1
+    max_depth: 8
+    subsample: 0.8
+    colsample_bytree: 0.8
+    tree_method: "hist"
+    max_bin: 256
   botnet_graph:
     min_beacon_flows: 5             # minimum flows on a directed edge (src -> dst) to evaluate periodicity
     max_beacon_cv: 0.25             # maximum coefficient of variation (std/mean) of inter-flow intervals for beaconing

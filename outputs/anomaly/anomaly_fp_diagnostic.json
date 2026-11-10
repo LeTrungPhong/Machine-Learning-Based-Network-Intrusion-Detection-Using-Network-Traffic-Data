@@ -1,0 +1,56 @@
+{
+  "policy": "fpr@0.01",
+  "ddos_window_utc": [
+    "2017-07-07 18:56:00+00:00",
+    "2017-07-07 19:16:00+00:00"
+  ],
+  "benign_test_rows": 764221,
+  "benign_in_ddos_window": 48858,
+  "benign_in_window_victim_as_source": 31535,
+  "models": {
+    "gaussian_diag": {
+      "fpr_overall": 0.013073443414928405,
+      "fpr_by_day": {
+        "Friday": 0.013166442081076294,
+        "Thursday": 0.012984990413165748
+      },
+      "fpr_in_ddos_window": 0.00562855622415981,
+      "fpr_victim_as_source": 0.0007927699381639448,
+      "fpr_outside_window": 0.013581915754658823,
+      "share_of_false_positives_in_window": 0.027524772295065558
+    },
+    "gaussian_full": {
+      "fpr_overall": 0.02382426025979396,
+      "fpr_by_day": {
+        "Friday": 0.034772291685680384,
+        "Thursday": 0.013411355611553221
+      },
+      "fpr_in_ddos_window": 0.16844733718121904,
+      "fpr_victim_as_source": 0.25286189947677185,
+      "fpr_outside_window": 0.01394676548829056,
+      "share_of_false_positives_in_window": 0.4520239468336354
+    },
+    "iforest_benign": {
+      "fpr_overall": 0.025056887994441397,
+      "fpr_by_day": {
+        "Friday": 0.04069383525975873,
+        "Thursday": 0.010184256145913916
+      },
+      "fpr_in_ddos_window": 0.2315485693233452,
+      "fpr_victim_as_source": 0.3542730299667037,
+      "fpr_outside_window": 0.010953879359150528,
+      "share_of_false_positives_in_window": 0.5907880307065643
+    },
+    "iforest_all": {
+      "fpr_overall": 0.020700818218813668,
+      "fpr_by_day": {
+        "Friday": 0.03234300930374888,
+        "Thursday": 0.009627683611491947
+      },
+      "fpr_in_ddos_window": 0.17356420647590978,
+      "fpr_victim_as_source": 0.2650071349294435,
+      "fpr_outside_window": 0.010260525076080256,
+      "share_of_false_positives_in_window": 0.5360303413400759
+    }
+  }
+}

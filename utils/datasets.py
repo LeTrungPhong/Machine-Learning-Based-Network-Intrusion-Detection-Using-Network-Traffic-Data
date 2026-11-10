@@ -34,6 +34,7 @@ class FileCheck:
     expected_size: int
     actual_size: int | None = None
     detail: str = ""
+    required: bool = True  # False for paths under datasets.<name>.optional_paths
 
     @property
     def ok(self) -> bool:
@@ -66,24 +67,26 @@ def verify_dataset(cfg: dict[str, Any], name: str) -> list[FileCheck]:
     """
     root = dataset_root(cfg, name)
     expected: dict[str, int] = cfg["datasets"][name].get("expected_files") or {}
+    optional = tuple(cfg["datasets"][name].get("optional_paths") or ())
     results: list[FileCheck] = []
     for rel, size in expected.items():
         path = root / rel
+        req = not rel.startswith(optional) if optional else True
         if not path.is_file():
-            results.append(FileCheck(rel, "missing", int(size)))
+            results.append(FileCheck(rel, "missing", int(size), required=req))
             continue
         actual = path.stat().st_size
         if actual != int(size):
-            results.append(FileCheck(rel, "size_mismatch", int(size), actual))
+            results.append(FileCheck(rel, "size_mismatch", int(size), actual, required=req))
             continue
         if path.suffix.lower() in {".pcap", ".pcapng"}:
             fmt = capture_format(path)
             if fmt is None:
-                results.append(FileCheck(rel, "bad_format", int(size), actual, "unknown magic"))
+                results.append(FileCheck(rel, "bad_format", int(size), actual, "unknown magic", required=req))
                 continue
-            results.append(FileCheck(rel, "ok", int(size), actual, fmt))
+            results.append(FileCheck(rel, "ok", int(size), actual, fmt, required=req))
             continue
-        results.append(FileCheck(rel, "ok", int(size), actual))
+        results.append(FileCheck(rel, "ok", int(size), actual, required=req))
     return results
 
 

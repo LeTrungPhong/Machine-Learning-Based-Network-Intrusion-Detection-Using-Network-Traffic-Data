@@ -38,6 +38,7 @@ from sklearn.preprocessing import FunctionTransformer, OneHotEncoder, RobustScal
 from sklearn.utils.class_weight import compute_class_weight
 
 from preprocessing.data_cleaning import CATEGORICAL_INPUTS
+from preprocessing.transforms import signed_log1p  # noqa: F401  (re-exported; must not be defined here, see transforms)
 from utils.config import resolve_path
 
 logger = logging.getLogger(__name__)
@@ -133,11 +134,6 @@ def split_summary(meta: pd.DataFrame, split: pd.Series) -> dict[str, Any]:
 
 # ---------------------------------------------------------------- pipeline
 
-def signed_log1p(x: np.ndarray) -> np.ndarray:
-    """``sign(x) * log1p(|x|)``; keeps the -1 sentinel distinguishable from 0."""
-    return np.sign(x) * np.log1p(np.abs(x))
-
-
 def correlated_features(X: pd.DataFrame, threshold: float, sample_rows: int | None = None,
                         seed: int = 42) -> list[str]:
     """Greedy filter: for every pair with ``|r| > threshold`` drop the later column.
@@ -223,6 +219,9 @@ class FittedPreprocessor:
         return self.transformer.transform(df[self.numeric + self.categorical]).astype(np.float32, copy=False)
 
     def save(self, path: str | Path) -> None:
+        if type(self).__module__ == "__main__":
+            raise RuntimeError("FittedPreprocessor defined in __main__ would not be loadable elsewhere; "
+                               "import it from preprocessing.preprocess")
         path = Path(path)
         path.parent.mkdir(parents=True, exist_ok=True)
         joblib.dump(self, path)
@@ -304,4 +303,8 @@ def main(argv: list[str] | None = None) -> int:
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    # Re-enter through the package module: objects pickled from here must reference
+    # preprocessing.preprocess.FittedPreprocessor, not __main__.FittedPreprocessor.
+    from preprocessing.preprocess import main as _main
+
+    sys.exit(_main())

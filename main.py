@@ -72,10 +72,14 @@ def run_check(cfg: dict[str, Any]) -> int:
         bad = [r for r in results if not r.ok]
         logger.info("[%s] %d/%d expected files OK", name, len(results) - len(bad), len(results))
         for r in bad:
+            if not r.required and r.status == "missing":
+                logger.warning("[%s] %s: missing (optional - only needed to re-run the steps that read it)",
+                               name, r.relpath)
+                continue
             logger.error("[%s] %s: %s (expected %d bytes, found %s)",
                          name, r.relpath, r.status, r.expected_size, r.actual_size)
-        if bad and name == "cicids2017":
-            status = 1
+            if name == "cicids2017":
+                status = 1
     return status
 
 

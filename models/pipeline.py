@@ -483,4 +483,8 @@ def main(argv: list[str] | None = None) -> int:
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    # Re-enter through the package module so the saved pipeline pickles as
+    # models.pipeline.MultiStageNIDSPipeline rather than __main__.MultiStageNIDSPipeline.
+    from models.pipeline import main as _main
+
+    raise SystemExit(_main())

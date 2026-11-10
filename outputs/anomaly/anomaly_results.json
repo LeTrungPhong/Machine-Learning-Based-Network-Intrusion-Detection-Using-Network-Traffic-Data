@@ -1,0 +1,1053 @@
+{
+  "setup": {
+    "split": "by_day",
+    "preprocessor": "cicids2017_by_day_benign.joblib",
+    "features": 82,
+    "val_rows": 283403,
+    "val_attack_rows": 10635,
+    "val_labels": {
+      "BENIGN": 272768,
+      "DoS GoldenEye": 10282,
+      "DoS Hulk": 339,
+      "Heartbleed": 11,
+      "DoS slowloris": 3
+    },
+    "test_rows": 986621,
+    "test_attack_rows": 222400,
+    "test_labels": {
+      "BENIGN": 764221,
+      "DDoS": 128013,
+      "PortScan": 90255,
+      "Bot": 1953,
+      "Web Attack - Brute Force": 1470,
+      "Web Attack - XSS": 652,
+      "Infiltration": 36,
+      "Web Attack - Sql Injection": 21
+    },
+    "target_fpr": [
+      0.01,
+      0.001
+    ],
+    "seed": 42
+  },
+  "models": {
+    "gaussian_diag": {
+      "ranking_test": {
+        "roc_auc": 0.6196899468949757,
+        "pr_auc": 0.250007413161855,
+        "attack_prevalence": 0.22541583850333613
+      },
+      "ranking_val": {
+        "roc_auc": 0.8369134309260811,
+        "pr_auc": 0.09641399010030109,
+        "attack_prevalence": 0.03752606711996697
+      },
+      "policies": {
+        "fpr@0.01": {
+          "val": {
+            "threshold": 152.13146644568982,
+            "tp": 0,
+            "fp": 2727,
+            "fn": 10635,
+            "tn": 270041,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "fpr": 0.00999750703894885,
+            "accuracy": 0.9528515929612601
+          },
+          "test": {
+            "threshold": 152.13146644568982,
+            "tp": 2536,
+            "fp": 9991,
+            "fn": 219864,
+            "tn": 754230,
+            "precision": 0.20244272371677177,
+            "recall": 0.011402877697841726,
+            "f1": 0.021589685306499466,
+            "fpr": 0.013073443414928405,
+            "accuracy": 0.7670280685288474
+          },
+          "test_per_label": [
+            {
+              "label": "BENIGN",
+              "n": 764221,
+              "flagged": 9991,
+              "rate": 0.013073443414928405
+            },
+            {
+              "label": "DDoS",
+              "n": 128013,
+              "flagged": 0,
+              "rate": 0.0
+            },
+            {
+              "label": "PortScan",
+              "n": 90255,
+              "flagged": 1288,
+              "rate": 0.01427067752479087
+            },
+            {
+              "label": "Bot",
+              "n": 1953,
+              "flagged": 1248,
+              "rate": 0.6390168970814132
+            },
+            {
+              "label": "Web Attack - Brute Force",
+              "n": 1470,
+              "flagged": 0,
+              "rate": 0.0
+            },
+            {
+              "label": "Web Attack - XSS",
+              "n": 652,
+              "flagged": 0,
+              "rate": 0.0
+            },
+            {
+              "label": "Infiltration",
+              "n": 36,
+              "flagged": 0,
+              "rate": 0.0
+            },
+            {
+              "label": "Web Attack - Sql Injection",
+              "n": 21,
+              "flagged": 0,
+              "rate": 0.0
+            }
+          ]
+        },
+        "fpr@0.001": {
+          "val": {
+            "threshold": 416.20239931305616,
+            "tp": 0,
+            "fp": 272,
+            "fn": 10635,
+            "tn": 272496,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "fpr": 0.000997184420459878,
+            "accuracy": 0.9615141688690663
+          },
+          "test": {
+            "threshold": 416.20239931305616,
+            "tp": 936,
+            "fp": 2263,
+            "fn": 221464,
+            "tn": 761958,
+            "precision": 0.2925914348233823,
+            "recall": 0.00420863309352518,
+            "f1": 0.008297909121937596,
+            "fpr": 0.002961185311578719,
+            "accuracy": 0.7732391668127883
+          },
+          "test_per_label": [
+            {
+              "label": "BENIGN",
+              "n": 764221,
+              "flagged": 2263,
+              "rate": 0.002961185311578719
+            },
+            {
+              "label": "DDoS",
+              "n": 128013,
+              "flagged": 0,
+              "rate": 0.0
+            },
+            {
+              "label": "PortScan",
+              "n": 90255,
+              "flagged": 350,
+              "rate": 0.0038779015013018668
+            },
+            {
+              "label": "Bot",
+              "n": 1953,
+              "flagged": 586,
+              "rate": 0.30005120327700974
+            },
+            {
+              "label": "Web Attack - Brute Force",
+              "n": 1470,
+              "flagged": 0,
+              "rate": 0.0
+            },
+            {
+              "label": "Web Attack - XSS",
+              "n": 652,
+              "flagged": 0,
+              "rate": 0.0
+            },
+            {
+              "label": "Infiltration",
+              "n": 36,
+              "flagged": 0,
+              "rate": 0.0
+            },
+            {
+              "label": "Web Attack - Sql Injection",
+              "n": 21,
+              "flagged": 0,
+              "rate": 0.0
+            }
+          ]
+        },
+        "best_f1_val": {
+          "val": {
+            "threshold": -15.91555863041905,
+            "tp": 10115,
+            "fp": 57175,
+            "fn": 520,
+            "tn": 215593,
+            "precision": 0.15031951255758658,
+            "recall": 0.9511048425011753,
+            "f1": 0.2596085980109079,
+            "fpr": 0.20961036485218207,
+            "accuracy": 0.7964206448061594
+          },
+          "test": {
+            "threshold": -15.91555863041905,
+            "tp": 28726,
+            "fp": 176152,
+            "fn": 193674,
+            "tn": 588069,
+            "precision": 0.14021027147863607,
+            "recall": 0.1291636690647482,
+            "f1": 0.13446046836017767,
+            "fpr": 0.23049876933504837,
+            "accuracy": 0.6251590022916601
+          },
+          "test_per_label": [
+            {
+              "label": "BENIGN",
+              "n": 764221,
+              "flagged": 176152,
+              "rate": 0.23049876933504837
+            },
+            {
+              "label": "DDoS",
+              "n": 128013,
+              "flagged": 23441,
+              "rate": 0.18311421496254288
+            },
+            {
+              "label": "PortScan",
+              "n": 90255,
+              "flagged": 1987,
+              "rate": 0.022015400808819457
+            },
+            {
+              "label": "Bot",
+              "n": 1953,
+              "flagged": 1248,
+              "rate": 0.6390168970814132
+            },
+            {
+              "label": "Web Attack - Brute Force",
+              "n": 1470,
+              "flagged": 1382,
+              "rate": 0.9401360544217687
+            },
+            {
+              "label": "Web Attack - XSS",
+              "n": 652,
+              "flagged": 631,
+              "rate": 0.9677914110429447
+            },
+            {
+              "label": "Infiltration",
+              "n": 36,
+              "flagged": 30,
+              "rate": 0.8333333333333334
+            },
+            {
+              "label": "Web Attack - Sql Injection",
+              "n": 21,
+              "flagged": 7,
+              "rate": 0.3333333333333333
+            }
+          ]
+        }
+      },
+      "kind": "gaussian",
+      "fit_on": "benign",
+      "train_part": "train_benign",
+      "train_rows": 1035970,
+      "train_attack_share": 0.0,
+      "params": {
+        "min_variance": 0.001,
+        "covariance": "diag"
+      },
+      "fit_seconds": 1.075165599992033,
+      "score_seconds_test": 1.4152690000191797,
+      "score_us_per_flow": 1.4344606490427223
+    },
+    "gaussian_full": {
+      "ranking_test": {
+        "roc_auc": 0.9090538602657257,
+        "pr_auc": 0.5762629291182351,
+        "attack_prevalence": 0.22541583850333613
+      },
+      "ranking_val": {
+        "roc_auc": 0.9182314173570484,
+        "pr_auc": 0.21472803330115373,
+        "attack_prevalence": 0.03752606711996697
+      },
+      "policies": {
+        "fpr@0.01": {
+          "val": {
+            "threshold": 121.87440212933981,
+            "tp": 1107,
+            "fp": 2727,
+            "fn": 9528,
+            "tn": 270041,
+            "precision": 0.2887323943661972,
+            "recall": 0.10409026798307475,
+            "f1": 0.1530167945262285,
+            "fpr": 0.00999750703894885,
+            "accuracy": 0.9567576913441284
+          },
+          "test": {
+            "threshold": 121.87440212933981,
+            "tp": 14688,
+            "fp": 18207,
+            "fn": 207712,
+            "tn": 746014,
+            "precision": 0.44651162790697674,
+            "recall": 0.0660431654676259,
+            "f1": 0.11506688340938914,
+            "fpr": 0.02382426025979396,
+            "accuracy": 0.7710174423613525
+          },
+          "test_per_label": [
+            {
+              "label": "BENIGN",
+              "n": 764221,
+              "flagged": 18207,
+              "rate": 0.02382426025979396
+            },
+            {
+              "label": "DDoS",
+              "n": 128013,
+              "flagged": 12010,
+              "rate": 0.09381859654878802
+            },
+            {
+              "label": "PortScan",
+              "n": 90255,
+              "flagged": 1415,
+              "rate": 0.01567780178383469
+            },
+            {
+              "label": "Bot",
+              "n": 1953,
+              "flagged": 1252,
+              "rate": 0.6410650281618023
+            },
+            {
+              "label": "Web Attack - Brute Force",
+              "n": 1470,
+              "flagged": 0,
+              "rate": 0.0
+            },
+            {
+              "label": "Web Attack - XSS",
+              "n": 652,
+              "flagged": 0,
+              "rate": 0.0
+            },
+            {
+              "label": "Infiltration",
+              "n": 36,
+              "flagged": 11,
+              "rate": 0.3055555555555556
+            },
+            {
+              "label": "Web Attack - Sql Injection",
+              "n": 21,
+              "flagged": 0,
+              "rate": 0.0
+            }
+          ]
+        },
+        "fpr@0.001": {
+          "val": {
+            "threshold": 445.3267505899607,
+            "tp": 0,
+            "fp": 272,
+            "fn": 10635,
+            "tn": 272496,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "fpr": 0.000997184420459878,
+            "accuracy": 0.9615141688690663
+          },
+          "test": {
+            "threshold": 445.3267505899607,
+            "tp": 630,
+            "fp": 1973,
+            "fn": 221770,
+            "tn": 762248,
+            "precision": 0.24202842873607375,
+            "recall": 0.0028327338129496404,
+            "f1": 0.005599925334328876,
+            "fpr": 0.002581713928300845,
+            "accuracy": 0.7732229498459895
+          },
+          "test_per_label": [
+            {
+              "label": "BENIGN",
+              "n": 764221,
+              "flagged": 1973,
+              "rate": 0.002581713928300845
+            },
+            {
+              "label": "DDoS",
+              "n": 128013,
+              "flagged": 0,
+              "rate": 0.0
+            },
+            {
+              "label": "PortScan",
+              "n": 90255,
+              "flagged": 236,
+              "rate": 0.0026148135837349732
+            },
+            {
+              "label": "Bot",
+              "n": 1953,
+              "flagged": 394,
+              "rate": 0.20174091141833078
+            },
+            {
+              "label": "Web Attack - Brute Force",
+              "n": 1470,
+              "flagged": 0,
+              "rate": 0.0
+            },
+            {
+              "label": "Web Attack - XSS",
+              "n": 652,
+              "flagged": 0,
+              "rate": 0.0
+            },
+            {
+              "label": "Infiltration",
+              "n": 36,
+              "flagged": 0,
+              "rate": 0.0
+            },
+            {
+              "label": "Web Attack - Sql Injection",
+              "n": 21,
+              "flagged": 0,
+              "rate": 0.0
+            }
+          ]
+        },
+        "best_f1_val": {
+          "val": {
+            "threshold": -67.85684944963492,
+            "tp": 8627,
+            "fp": 33398,
+            "fn": 2008,
+            "tn": 239370,
+            "precision": 0.20528256989886973,
+            "recall": 0.811189468735308,
+            "f1": 0.32764906950246864,
+            "fpr": 0.1224410488033787,
+            "accuracy": 0.8750683655430606
+          },
+          "test": {
+            "threshold": -67.85684944963492,
+            "tp": 218793,
+            "fp": 148791,
+            "fn": 3607,
+            "tn": 615430,
+            "precision": 0.5952190519717943,
+            "recall": 0.9837814748201439,
+            "f1": 0.7416913001030536,
+            "fpr": 0.19469629858378662,
+            "accuracy": 0.8455354183622688
+          },
+          "test_per_label": [
+            {
+              "label": "BENIGN",
+              "n": 764221,
+              "flagged": 148791,
+              "rate": 0.19469629858378662
+            },
+            {
+              "label": "DDoS",
+              "n": 128013,
+              "flagged": 127268,
+              "rate": 0.9941802785654582
+            },
+            {
+              "label": "PortScan",
+              "n": 90255,
+              "flagged": 90150,
+              "rate": 0.9988366295496094
+            },
+            {
+              "label": "Bot",
+              "n": 1953,
+              "flagged": 1252,
+              "rate": 0.6410650281618023
+            },
+            {
+              "label": "Web Attack - Brute Force",
+              "n": 1470,
+              "flagged": 73,
+              "rate": 0.04965986394557823
+            },
+            {
+              "label": "Web Attack - XSS",
+              "n": 652,
+              "flagged": 16,
+              "rate": 0.024539877300613498
+            },
+            {
+              "label": "Infiltration",
+              "n": 36,
+              "flagged": 34,
+              "rate": 0.9444444444444444
+            },
+            {
+              "label": "Web Attack - Sql Injection",
+              "n": 21,
+              "flagged": 0,
+              "rate": 0.0
+            }
+          ]
+        }
+      },
+      "kind": "gaussian",
+      "fit_on": "benign",
+      "train_part": "train_benign",
+      "train_rows": 1035970,
+      "train_attack_share": 0.0,
+      "params": {
+        "min_variance": 0.001,
+        "covariance": "full"
+      },
+      "fit_seconds": 1.7661910000024363,
+      "score_seconds_test": 4.375791900005424,
+      "score_us_per_flow": 4.435129497553189
+    },
+    "iforest_benign": {
+      "ranking_test": {
+        "roc_auc": 0.8751006043674849,
+        "pr_auc": 0.5268418312533746,
+        "attack_prevalence": 0.22541583850333613
+      },
+      "ranking_val": {
+        "roc_auc": 0.8872222893166275,
+        "pr_auc": 0.13443974654978644,
+        "attack_prevalence": 0.03752606711996697
+      },
+      "policies": {
+        "fpr@0.01": {
+          "val": {
+            "threshold": 0.5906466860801974,
+            "tp": 21,
+            "fp": 2727,
+            "fn": 10614,
+            "tn": 270041,
+            "precision": 0.007641921397379912,
+            "recall": 0.0019746121297602257,
+            "f1": 0.0031383097960098636,
+            "fpr": 0.00999750703894885,
+            "accuracy": 0.9529256923885774
+          },
+          "test": {
+            "threshold": 0.5906466860801974,
+            "tp": 21239,
+            "fp": 19149,
+            "fn": 201161,
+            "tn": 745072,
+            "precision": 0.5258740219867287,
+            "recall": 0.09549910071942445,
+            "f1": 0.16164360625294913,
+            "fpr": 0.025056887994441397,
+            "accuracy": 0.7767025027847573
+          },
+          "test_per_label": [
+            {
+              "label": "BENIGN",
+              "n": 764221,
+              "flagged": 19149,
+              "rate": 0.025056887994441397
+            },
+            {
+              "label": "DDoS",
+              "n": 128013,
+              "flagged": 20997,
+              "rate": 0.16402240397459633
+            },
+            {
+              "label": "PortScan",
+              "n": 90255,
+              "flagged": 217,
+              "rate": 0.0024042989308071575
+            },
+            {
+              "label": "Bot",
+              "n": 1953,
+              "flagged": 0,
+              "rate": 0.0
+            },
+            {
+              "label": "Web Attack - Brute Force",
+              "n": 1470,
+              "flagged": 0,
+              "rate": 0.0
+            },
+            {
+              "label": "Web Attack - XSS",
+              "n": 652,
+              "flagged": 0,
+              "rate": 0.0
+            },
+            {
+              "label": "Infiltration",
+              "n": 36,
+              "flagged": 25,
+              "rate": 0.6944444444444444
+            },
+            {
+              "label": "Web Attack - Sql Injection",
+              "n": 21,
+              "flagged": 0,
+              "rate": 0.0
+            }
+          ]
+        },
+        "fpr@0.001": {
+          "val": {
+            "threshold": 0.6333808413440329,
+            "tp": 4,
+            "fp": 272,
+            "fn": 10631,
+            "tn": 272496,
+            "precision": 0.014492753623188406,
+            "recall": 0.00037611659614480487,
+            "f1": 0.0007332050224544038,
+            "fpr": 0.000997184420459878,
+            "accuracy": 0.9615282830456982
+          },
+          "test": {
+            "threshold": 0.6333808413440329,
+            "tp": 6,
+            "fp": 873,
+            "fn": 222394,
+            "tn": 763348,
+            "precision": 0.006825938566552901,
+            "recall": 2.697841726618705e-05,
+            "f1": 5.374441841821219e-05,
+            "fpr": 0.0011423397158675304,
+            "accuracy": 0.7737054046082539
+          },
+          "test_per_label": [
+            {
+              "label": "BENIGN",
+              "n": 764221,
+              "flagged": 873,
+              "rate": 0.0011423397158675304
+            },
+            {
+              "label": "DDoS",
+              "n": 128013,
+              "flagged": 0,
+              "rate": 0.0
+            },
+            {
+              "label": "PortScan",
+              "n": 90255,
+              "flagged": 2,
+              "rate": 2.2159437150296382e-05
+            },
+            {
+              "label": "Bot",
+              "n": 1953,
+              "flagged": 0,
+              "rate": 0.0
+            },
+            {
+              "label": "Web Attack - Brute Force",
+              "n": 1470,
+              "flagged": 0,
+              "rate": 0.0
+            },
+            {
+              "label": "Web Attack - XSS",
+              "n": 652,
+              "flagged": 0,
+              "rate": 0.0
+            },
+            {
+              "label": "Infiltration",
+              "n": 36,
+              "flagged": 4,
+              "rate": 0.1111111111111111
+            },
+            {
+              "label": "Web Attack - Sql Injection",
+              "n": 21,
+              "flagged": 0,
+              "rate": 0.0
+            }
+          ]
+        },
+        "best_f1_val": {
+          "val": {
+            "threshold": 0.5170557633203733,
+            "tp": 9447,
+            "fp": 44143,
+            "fn": 1188,
+            "tn": 228625,
+            "precision": 0.17628288859861915,
+            "recall": 0.8882933709449929,
+            "f1": 0.2941845075905022,
+            "fpr": 0.16183349953073675,
+            "accuracy": 0.8400475647752493
+          },
+          "test": {
+            "threshold": 0.5170557633203733,
+            "tp": 188036,
+            "fp": 172066,
+            "fn": 34364,
+            "tn": 592155,
+            "precision": 0.5221742728449161,
+            "recall": 0.8454856115107914,
+            "f1": 0.6456149506782809,
+            "fpr": 0.22515214839686426,
+            "accuracy": 0.7907707214827173
+          },
+          "test_per_label": [
+            {
+              "label": "BENIGN",
+              "n": 764221,
+              "flagged": 172066,
+              "rate": 0.22515214839686426
+            },
+            {
+              "label": "DDoS",
+              "n": 128013,
+              "flagged": 127950,
+              "rate": 0.9995078624827166
+            },
+            {
+              "label": "PortScan",
+              "n": 90255,
+              "flagged": 57605,
+              "rate": 0.6382471885214116
+            },
+            {
+              "label": "Bot",
+              "n": 1953,
+              "flagged": 536,
+              "rate": 0.27444956477214544
+            },
+            {
+              "label": "Web Attack - Brute Force",
+              "n": 1470,
+              "flagged": 1288,
+              "rate": 0.8761904761904762
+            },
+            {
+              "label": "Web Attack - XSS",
+              "n": 652,
+              "flagged": 624,
+              "rate": 0.9570552147239264
+            },
+            {
+              "label": "Infiltration",
+              "n": 36,
+              "flagged": 32,
+              "rate": 0.8888888888888888
+            },
+            {
+              "label": "Web Attack - Sql Injection",
+              "n": 21,
+              "flagged": 1,
+              "rate": 0.047619047619047616
+            }
+          ]
+        }
+      },
+      "kind": "isolation_forest",
+      "fit_on": "benign",
+      "train_part": "train_benign",
+      "train_rows": 1035970,
+      "train_attack_share": 0.0,
+      "params": {
+        "n_estimators": 200,
+        "max_samples": 256,
+        "max_features": 1.0
+      },
+      "fit_seconds": 2.9540387999732047,
+      "score_seconds_test": 19.556829999986803,
+      "score_us_per_flow": 19.82202892497403
+    },
+    "iforest_all": {
+      "ranking_test": {
+        "roc_auc": 0.823662202606366,
+        "pr_auc": 0.4104014500037299,
+        "attack_prevalence": 0.22541583850333613
+      },
+      "ranking_val": {
+        "roc_auc": 0.7607481648513879,
+        "pr_auc": 0.0755328617994676,
+        "attack_prevalence": 0.03752606711996697
+      },
+      "policies": {
+        "fpr@0.01": {
+          "val": {
+            "threshold": 0.5885272636770131,
+            "tp": 45,
+            "fp": 2727,
+            "fn": 10590,
+            "tn": 270041,
+            "precision": 0.016233766233766232,
+            "recall": 0.004231311706629055,
+            "f1": 0.006712911165808906,
+            "fpr": 0.00999750703894885,
+            "accuracy": 0.9530103774483686
+          },
+          "test": {
+            "threshold": 0.5885272636770131,
+            "tp": 252,
+            "fp": 15819,
+            "fn": 222148,
+            "tn": 748402,
+            "precision": 0.015680418144483853,
+            "recall": 0.0011330935251798561,
+            "f1": 0.002113464530278315,
+            "fpr": 0.020699509696802364,
+            "accuracy": 0.7588060663618552
+          },
+          "test_per_label": [
+            {
+              "label": "BENIGN",
+              "n": 764221,
+              "flagged": 15819,
+              "rate": 0.020699509696802364
+            },
+            {
+              "label": "DDoS",
+              "n": 128013,
+              "flagged": 0,
+              "rate": 0.0
+            },
+            {
+              "label": "PortScan",
+              "n": 90255,
+              "flagged": 227,
+              "rate": 0.0025150961165586396
+            },
+            {
+              "label": "Bot",
+              "n": 1953,
+              "flagged": 0,
+              "rate": 0.0
+            },
+            {
+              "label": "Web Attack - Brute Force",
+              "n": 1470,
+              "flagged": 0,
+              "rate": 0.0
+            },
+            {
+              "label": "Web Attack - XSS",
+              "n": 652,
+              "flagged": 0,
+              "rate": 0.0
+            },
+            {
+              "label": "Infiltration",
+              "n": 36,
+              "flagged": 25,
+              "rate": 0.6944444444444444
+            },
+            {
+              "label": "Web Attack - Sql Injection",
+              "n": 21,
+              "flagged": 0,
+              "rate": 0.0
+            }
+          ]
+        },
+        "fpr@0.001": {
+          "val": {
+            "threshold": 0.620039073998117,
+            "tp": 5,
+            "fp": 272,
+            "fn": 10630,
+            "tn": 272496,
+            "precision": 0.018050541516245487,
+            "recall": 0.0004701457451810061,
+            "f1": 0.0009164222873900293,
+            "fpr": 0.000997184420459878,
+            "accuracy": 0.9615318115898561
+          },
+          "test": {
+            "threshold": 0.620039073998117,
+            "tp": 13,
+            "fp": 874,
+            "fn": 222387,
+            "tn": 763347,
+            "precision": 0.014656144306651634,
+            "recall": 5.8453237410071946e-05,
+            "f1": 0.00011644206783198305,
+            "fpr": 0.0011436482378788335,
+            "accuracy": 0.7737114859708034
+          },
+          "test_per_label": [
+            {
+              "label": "BENIGN",
+              "n": 764221,
+              "flagged": 874,
+              "rate": 0.0011436482378788335
+            },
+            {
+              "label": "DDoS",
+              "n": 128013,
+              "flagged": 0,
+              "rate": 0.0
+            },
+            {
+              "label": "PortScan",
+              "n": 90255,
+              "flagged": 1,
+              "rate": 1.1079718575148191e-05
+            },
+            {
+              "label": "Bot",
+              "n": 1953,
+              "flagged": 0,
+              "rate": 0.0
+            },
+            {
+              "label": "Web Attack - Brute Force",
+              "n": 1470,
+              "flagged": 0,
+              "rate": 0.0
+            },
+            {
+              "label": "Web Attack - XSS",
+              "n": 652,
+              "flagged": 0,
+              "rate": 0.0
+            },
+            {
+              "label": "Infiltration",
+              "n": 36,
+              "flagged": 12,
+              "rate": 0.3333333333333333
+            },
+            {
+              "label": "Web Attack - Sql Injection",
+              "n": 21,
+              "flagged": 0,
+              "rate": 0.0
+            }
+          ]
+        },
+        "best_f1_val": {
+          "val": {
+            "threshold": 0.5364809932752332,
+            "tp": 2703,
+            "fp": 18851,
+            "fn": 7932,
+            "tn": 253917,
+            "precision": 0.12540595713092698,
+            "recall": 0.2541607898448519,
+            "f1": 0.1679455714685141,
+            "fpr": 0.06911001290473956,
+            "accuracy": 0.9054950018172002
+          },
+          "test": {
+            "threshold": 0.5364809932752332,
+            "tp": 34387,
+            "fp": 79644,
+            "fn": 188013,
+            "tn": 684577,
+            "precision": 0.3015583481684805,
+            "recall": 0.1546178057553957,
+            "f1": 0.20442230353326538,
+            "fpr": 0.10421592706821718,
+            "accuracy": 0.7287134573458298
+          },
+          "test_per_label": [
+            {
+              "label": "BENIGN",
+              "n": 764221,
+              "flagged": 79644,
+              "rate": 0.10421592706821718
+            },
+            {
+              "label": "DDoS",
+              "n": 128013,
+              "flagged": 32327,
+              "rate": 0.25252904001937304
+            },
+            {
+              "label": "PortScan",
+              "n": 90255,
+              "flagged": 1408,
+              "rate": 0.015600243753808652
+            },
+            {
+              "label": "Bot",
+              "n": 1953,
+              "flagged": 533,
+              "rate": 0.27291346646185355
+            },
+            {
+              "label": "Web Attack - Brute Force",
+              "n": 1470,
+              "flagged": 72,
+              "rate": 0.04897959183673469
+            },
+            {
+              "label": "Web Attack - XSS",
+              "n": 652,
+              "flagged": 16,
+              "rate": 0.024539877300613498
+            },
+            {
+              "label": "Infiltration",
+              "n": 36,
+              "flagged": 31,
+              "rate": 0.8611111111111112
+            },
+            {
+              "label": "Web Attack - Sql Injection",
+              "n": 21,
+              "flagged": 0,
+              "rate": 0.0
+            }
+          ]
+        }
+      },
+      "kind": "isolation_forest",
+      "fit_on": "all",
+      "train_part": "train_sample",
+      "train_rows": 300000,
+      "train_attack_share": 0.15637,
+      "params": {
+        "n_estimators": 200,
+        "max_samples": 256,
+        "max_features": 1.0
+      },
+      "fit_seconds": 1.3958225999958813,
+      "score_seconds_test": 20.49158709999756,
+      "score_us_per_flow": 20.76946172846266
+    }
+  }
+}

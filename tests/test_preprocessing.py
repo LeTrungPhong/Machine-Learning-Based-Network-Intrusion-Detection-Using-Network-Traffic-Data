@@ -192,3 +192,24 @@ def test_assign_labels_rules() -> None:
     # outside the tolerance -> unmatched
     late = flows.iloc[[1]].assign(timestamp=t + pd.Timedelta(minutes=5))
     assert assign_labels(late, cic)["label_status"].iloc[0] == "unmatched"
+
+
+def test_log_transform_pickles_by_importable_module_name():
+    # Regression: defined in preprocess.py and saved via `python -m preprocessing.preprocess`,
+    # the function was pickled as __main__.signed_log1p and could not be loaded elsewhere.
+    from preprocessing.preprocess import build_preprocessor
+
+    ct = build_preprocessor(["a"], [], {"log_transform": True})
+    fn = ct.transformers[0][1].named_steps["log"].func
+    assert fn.__module__ == "preprocessing.transforms"
+
+
+def test_save_refuses_class_defined_in_main(tmp_path: Path):
+    # Regression: running `python -m preprocessing.preprocess` pickled the class as
+    # __main__.FittedPreprocessor, loadable only by scripts that happened to import it.
+    class Fake(FittedPreprocessor):
+        pass
+
+    Fake.__module__ = "__main__"
+    with pytest.raises(RuntimeError):
+        Fake(None, [], [], [], [], {}).save(tmp_path / "p.joblib")

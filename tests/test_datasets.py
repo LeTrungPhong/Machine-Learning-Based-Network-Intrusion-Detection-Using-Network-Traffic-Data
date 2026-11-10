@@ -51,3 +51,13 @@ def test_location_hint_none_when_root_exists(tmp_path: Path) -> None:
     root = tmp_path / "datasets" / "demo"
     root.mkdir(parents=True)
     assert location_hint(_cfg(root, {}), "demo") is None
+
+
+def test_optional_paths_mark_files_not_required(tmp_path: Path) -> None:
+    root = tmp_path / "datasets" / "demo"
+    root.mkdir(parents=True)
+    cfg = _cfg(root, {"pcaps/day.pcap": 10, "csvs/a.csv": 5})
+    cfg["datasets"]["demo"]["optional_paths"] = ["pcaps/"]
+    results = {r.relpath: r for r in verify_dataset(cfg, "demo")}
+    assert results["pcaps/day.pcap"].status == "missing" and not results["pcaps/day.pcap"].required
+    assert results["csvs/a.csv"].required

@@ -1,0 +1,63 @@
+"""Where do STEP 6 false positives on the Thu-Fri test come from?
+
+Splits benign test flows flagged at each model's ``fpr@<primary>`` threshold by
+capture day and by the Friday DDoS window. Inside that window CIC labels the
+DDoS fragments whose source is the victim (192.168.10.50) as BENIGN (see
+STEP 5), so part of the measured FPR is label noise rather than model error.
+
+Usage:
+    python scripts/anomaly_fp_diagnostic.py
+"""
+
+from __future__ import annotations
+
+import json
+import sys
+from pathlib import Path
+
+import pandas as pd
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
+from utils.config import load_config, resolve_path  # noqa: E402
+
+VICTIM = "192.168.10.50"
+
+
+def main() -> int:
+    cfg = load_config()
+    acfg = cfg["models"]["anomaly"]
+    out_dir = resolve_path(acfg["output_dir"])
+    res = json.loads((out_dir / "anomaly_results.json").read_text(encoding="utf-8"))
+    policy = f"fpr@{float(acfg['target_fpr'][0]):g}"
+    scores = pd.read_parquet(resolve_path(cfg["paths"]["processed_dir"]) / "anomaly_test_scores.parquet")
+    meta = pd.read_parquet(resolve_path(cfg["datasets"]["cicids2017"]["clean_output"]),
+                           columns=["day", "src_ip", "timestamp"])
+    s = scores.join(meta, on="row_id")
+    ddos = s[s["label"] == "DDoS"]["timestamp"]
+    t0, t1 = ddos.min(), ddos.max()
+    b = s[s["label"] == "BENIGN"]
+    window = (b["day"] == "Friday") & b["timestamp"].between(t0, t1)
+    victim_src = window & (b["src_ip"] == VICTIM)
+
+    report: dict = {"policy": policy, "ddos_window_utc": [str(t0), str(t1)],
+                    "benign_test_rows": int(len(b)), "benign_in_ddos_window": int(window.sum()),
+                    "benign_in_window_victim_as_source": int(victim_src.sum()), "models": {}}
+    for name, ev in res["models"].items():
+        flag = b[name] >= ev["policies"][policy]["test"]["threshold"]
+        report["models"][name] = {
+            "fpr_overall": float(flag.mean()),
+            "fpr_by_day": {k: float(v) for k, v in flag.groupby(b["day"]).mean().items()},
+            "fpr_in_ddos_window": float(flag[window].mean()),
+            "fpr_victim_as_source": float(flag[victim_src].mean()),
+            "fpr_outside_window": float(flag[~window].mean()),
+            "share_of_false_positives_in_window": float(flag[window].sum() / max(flag.sum(), 1)),
+        }
+    path = out_dir / "anomaly_fp_diagnostic.json"
+    path.write_text(json.dumps(report, indent=2), encoding="utf-8")
+    print(json.dumps(report, indent=2))
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

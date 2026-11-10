@@ -163,7 +163,7 @@
   "meta": {
     "sklearn": "1.9.1",
     "train_rows": 1623767,
-    "created": "2026-10-30T21:37:59",
+    "created": "2026-11-10T23:42:51",
     "strategy": "temporal_per_class",
     "fit_on": "all"
   }

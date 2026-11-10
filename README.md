@@ -24,13 +24,17 @@ Dataset chính: **CIC-IDS-2017** (PCAP gốc + CSV có nhãn). Dataset botnet: *
 | 3 | Đọc PCAP và trích xuất trường gói tin | Xong |
 | 4 | Tái tạo flow hai chiều, đặc trưng flow và host | Xong |
 | 5 | Làm sạch CSV, EDA, chia dữ liệu, tiền xử lý, gán nhãn flow | Xong |
-| 6 | Phát hiện bất thường: Gaussian, Isolation Forest | Xong |
-| 7 | Phân loại có giám sát: Random Forest, Gradient Boosting / XGBoost | Xong |
-| 8 | Deep learning: Autoencoder & Multi-Layer Perceptron (MLP) | Xong |
-| 9 | Phát hiện botnet bằng đồ thị (Centralized C2 vs P2P, CTU-13 `.binetflow`) | Xong |
-| 10 | Pipeline kết hợp 3 tầng, so sánh mô hình, ablation study, đánh giá Zero-Day | Xong |
-| 11 | Phát hiện thời gian thực trên Kali Linux & kịch bản mô phỏng tấn công | Xong |
-| 12 | Kiểm thử tổng thể (`pytest`), tài liệu, báo cáo cuối | Xong |
+| 6 | Phát hiện bất thường: Gaussian, Isolation Forest (trên CIC-IDS-2017, split `by_day`) | Xong |
+| 7 | Phân loại có giám sát: Random Forest, XGBoost (trên CIC-IDS-2017, split `temporal_per_class`) | Xong |
+| 8 | Deep learning: Autoencoder / VAE | Có code (Autoencoder), chưa đánh giá trên dữ liệu thật; chưa có VAE |
+| 9 | Phát hiện botnet bằng đồ thị (CTU-13) | Có code, chưa tải CTU-13 |
+| 10 | So sánh mô hình, ablation, pipeline kết hợp | Có code, chưa đánh giá trên dữ liệu thật |
+| 11 | Phát hiện thời gian thực trên Kali | Có code, chưa thử trên mạng lab |
+| 12 | Kiểm thử tổng thể, tài liệu, báo cáo cuối | Chưa làm |
+
+> Các con số của STEP 7–12 mà commit `57b0bad` đưa vào README và báo cáo được tính trên **dữ liệu tổng hợp**
+> (`generate_multistage_benchmark_data`, `generate_synthetic_botnet_flows`), không phải CIC-IDS-2017 hay CTU-13.
+> Vì vậy chúng đã bị gỡ khỏi phần kết quả; STEP 6–7 đã được làm lại trên dữ liệu thật (xem mục 7–9 của báo cáo).
 
 ---
 
@@ -49,24 +53,31 @@ ATTT_Project/
 │   ├── cic_csv.py             # đọc CSV CIC (lỗi mã hoá nhãn, timestamp 12 giờ không AM/PM)
 │   ├── data_cleaning.py       # làm sạch CSV CIC -> 1 file Parquet + báo cáo
 │   ├── preprocess.py          # chia train/val/test, pipeline tiền xử lý, class weight, SMOTE
+│   ├── transforms.py          # hàm biến đổi dùng trong pipeline đã pickle (signed log1p)
 │   └── labeling.py            # gán nhãn CIC cho flow tự trích từ PCAP
 ├── eda/
 │   ├── data_analysis.ipynb    # notebook EDA (đã chạy)
 │   ├── findings.md            # nhận xét viết sau khi đọc kết quả thật
 │   └── visualization.py       # hàm vẽ dùng chung
 ├── models/
-│   ├── model_training.ipynb   # notebook huấn luyện ML/DL & Botnet Graph (STEP 6-9)
+│   ├── anomaly.py             # STEP 6: Gaussian (diag/full) và Isolation Forest
+│   ├── train_anomaly.py       # STEP 6: huấn luyện, chọn ngưỡng, đánh giá trên CIC
+│   ├── supervised.py          # STEP 7: Random Forest / XGBoost, class weight, SMOTE
+│   ├── train_supervised.py    # STEP 7: huấn luyện, chọn mô hình theo validation, đánh giá trên CIC
+│   ├── feature_cache.py       # cache ma trận đặc trưng đã biến đổi (.npy memmap), dùng chung
+│   ├── model_training.ipynb   # notebook ML/DL (đã chạy trên dữ liệu tổng hợp, chưa phải kết quả thật)
 │   └── pipeline.py            # Pipeline kết hợp 3 tầng (Gaussian -> Random Forest -> Host/Graph)
 ├── graph/
 │   └── botnet_graph.py        # Đồ thị giao tiếp mạng, phát hiện Centralized C2 vs P2P & ML trên đồ thị
 ├── evaluation/
-│   └── evaluate_pipeline.py   # So sánh toàn diện các mô hình & Ablation Study (STEP 10)
+│   ├── metrics.py             # ngưỡng, Precision/Recall/FPR, ROC/PR-AUC, chỉ số đa lớp và theo nhóm
+│   └── evaluate_pipeline.py   # So sánh mô hình & ablation (hiện chạy trên dữ liệu tổng hợp)
 ├── realtime/
 │   ├── monitor.py             # Giám sát thời gian thực (Scapy sniff / FlowManager / JSONL alerts / iptables)
 │   └── attack_simulator.py    # Mô phỏng tấn công (PortScan, DoS Flood, Botnet C2, Zero-Day) & đo độ trễ
 ├── scripts/                   # kiểm tra dataset, kiểm chứng parser, build notebook & báo cáo Word
 ├── tests/                     # pytest (kiểm thử toàn diện từ gói tin đến đồ thị và realtime)
-├── outputs/                   # eda/, validation/, botnet_graph/, evaluation/, alerts/
+├── outputs/                   # eda/, validation/, anomaly/ (STEP 6), supervised/ (STEP 7), botnet_graph/, evaluation/, alerts/
 ├── docs/report.md             # nguồn của báo cáo khoa học
 └── report.docx                # báo cáo khoa học (Word)
 ```
@@ -107,7 +118,9 @@ datasets/CIC-IDS-2017/
     └── GeneratedLabelledFlows/TrafficLabelling/  # 8 CSV, 85 cột (có IP, port, timestamp)
 ```
 
-Kiểm tra đủ 21 file và đúng kích thước:
+Kiểm tra đủ 21 file và đúng kích thước. PCAP và `MachineLearningCVE` là tuỳ chọn (`optional_paths` trong
+`config.yaml`): chỉ cần khi chạy lại STEP 3–4, hoặc phép kiểm tra hai bộ CSV giống nhau ở STEP 5. Từ STEP 5 trở đi
+mọi bước đọc `TrafficLabelling` và `processed/`, nên thiếu PCAP chỉ sinh cảnh báo.
 
 ```bash
 python main.py --mode check
@@ -154,7 +167,42 @@ python scripts/build_eda_notebook.py
 python scripts/build_training_notebook.py
 ```
 
-### Chạy huấn luyện, đánh giá, đồ thị Botnet và giám sát thời gian thực (STEP 6–12)
+### STEP 6: phát hiện bất thường trên CIC-IDS-2017
+
+Cần chạy `preprocessing.data_cleaning` và `preprocessing.preprocess --strategy by_day --fit-on benign` trước.
+Lần chạy đầu ghi khoảng 0,8 GB ma trận đặc trưng vào `processed/features/` (khoảng 3 phút, khoảng 2 GB RAM).
+
+```bash
+python -m models.train_anomaly
+```
+
+```bash
+python scripts/anomaly_fp_diagnostic.py
+```
+
+Kết quả nằm ở `outputs/anomaly/`: `anomaly_summary.csv`, `anomaly_results.json`, kết quả theo nhãn, đường ROC/PR
+và phân tích báo động sai.
+
+### STEP 7: phân loại có giám sát trên CIC-IDS-2017
+
+Cần chạy `preprocessing.preprocess --strategy temporal_per_class` trước. Mất khoảng 15 phút cho 4 biến thể
+(CPU 12 luồng); RAM dùng tối đa khoảng 2 GB. Cache khoảng 0,8 GB, cộng 0,7 GB cho file SMOTE.
+
+```bash
+python -m models.train_supervised
+```
+
+```bash
+python scripts/supervised_error_diagnostic.py
+```
+
+Kết quả nằm ở `outputs/supervised/`: bảng tổng hợp, F1/precision/recall theo nhãn và theo nhóm, ma trận nhầm lẫn,
+mức độ quan trọng của đặc trưng và phân tích lỗi. Chạy một phần: `--only rf_weighted xgb_weighted`.
+
+### Các module STEP 8–12 (mới kiểm thử chức năng trên dữ liệu tổng hợp)
+
+Các lệnh dưới đây chạy được, nhưng mặc định dùng dữ liệu tổng hợp hoặc mô hình huấn luyện trên dữ liệu tổng hợp.
+Số liệu chúng in ra **không phải kết quả trên CIC-IDS-2017 / CTU-13**.
 
 ```bash
 # Huấn luyện toàn bộ pipeline 3 tầng & mô hình đồ thị Botnet
@@ -225,22 +273,44 @@ python scripts/compare_flows_with_cic.py --flows processed/flows/Friday-WorkingH
   loại đặc trưng tương quan > 0,99.
 - Gán nhãn cho 2.109.714 flow tự trích của 5 ngày; 0,28% không khớp.
 
-### STEP 6–8: Huấn luyện mô hình Machine Learning & Deep Learning (`models/model_training.ipynb`)
-- **Phát hiện bất thường (STEP 6):** Mô hình phân phối Gaussian (Log-Likelihood) và Isolation Forest chỉ học trên lưu lượng `BENIGN`, chọn ngưỡng tối ưu $\tau$ trên tập Validation theo F1-Score.
-- **Phân loại có giám sát (STEP 7):** Random Forest (`class_weight="balanced"`) và Gradient Boosting / XGBoost phân loại đa lớp (`BENIGN`, `DoS`, `DDoS`, `PortScan`, `BruteForce`, `Bot`), kèm ma trận nhầm lẫn và xếp hạng mức độ quan trọng của đặc trưng.
+### STEP 6: Phát hiện bất thường (`models/anomaly.py`, `models/train_anomaly.py`)
+- Học trên thứ Hai–Tư, kiểm tra trên thứ Năm–Sáu: cả 7 loại tấn công trong test đều chưa thấy khi huấn luyện.
+- 4 biến thể: Gaussian đường chéo, Gaussian hiệp phương sai đầy đủ, Isolation Forest học trên BENIGN,
+  Isolation Forest học trên train không lọc nhãn.
+- Ngưỡng chọn trên validation: FPR 1% / 0,1% trên benign (không cần nhãn tấn công), hoặc best-F1.
+- Kết quả trên test:
+  - Gaussian full đạt ROC-AUC 0,909, PR-AUC 0,576, nhưng ở FPR 1% recall chỉ 6,6%
+    (Isolation Forest học trên BENIGN: 9,6%);
+  - Bot (64%) và Infiltration (69%) được phát hiện một phần; Web Attack và PortScan gần như không;
+  - 45–59% báo động sai trên test nằm trong đợt DDoS, nơi CIC gán nhầm nhãn BENIGN.
+
+### STEP 7: Phân loại có giám sát (`models/supervised.py`, `models/train_supervised.py`)
+- Mỗi nhãn: 65% flow sớm nhất để train, 15% kế tiếp để validation, 20% muộn nhất để test; 15 nhãn.
+- 4 biến thể: Random Forest và XGBoost, mỗi mô hình với class weight hoặc SMOTE (SMOTE chỉ trên train).
+  Chọn mô hình theo macro-F1 trên validation.
+- Kết quả trên test (mô hình chọn theo validation là Random Forest + SMOTE):
+  - macro-F1 0,774 trên 15 nhãn, 0,835 trên 8 nhóm; accuracy 0,993; FPR 0,03%;
+  - DoS Hulk, DDoS, PortScan, GoldenEye, Patator đạt F1 ≥ 0,96; Web Brute Force và XSS bị nhầm lẫn qua lại
+    (nhóm WebAttack F1 0,93);
+  - **Bot F1 = 0** ở cả 4 mô hình: flow Bot trong test (tới C2 205.174.165.73:8080, không payload) giống hệt
+    966 flow mà CIC gán BENIGN tới cùng đích;
+  - biến thể class weight đoán 6,7–11,4 nghìn flow "BENIGN" thành DDoS; 99,9% trong số đó là mảnh DDoS
+    mà CIC gán nhầm nhãn.
+
+### STEP 8: Deep learning (`models/model_training.ipynb`, mới kiểm thử trên dữ liệu tổng hợp)
 - **Deep Learning (STEP 8):** Mạng **Deep Autoencoder** phát hiện bất thường qua sai số tái tạo (Reconstruction MSE) và **Deep MLP Classifier** phân loại đa lớp với `BatchNorm1d`, `Dropout` và trọng số lớp.
 
 ### STEP 9: Phát hiện Botnet dựa trên Đồ thị Giao tiếp Mạng (`graph/botnet_graph.py`)
 - Xây dựng đồ thị có hướng $G = (V, E)$ từ bảng Flow hoặc file `.binetflow` của **CTU-13**.
 - Trích xuất 20 đặc trưng đồ thị cấp nút (In/Out-Degree, PageRank, Clustering Coefficient, Betweenness Centrality, Reciprocity Ratio, số cạnh Beaconing định kỳ).
-- Nhận diện chính xác cấu trúc **Centralized C2 (`c2_server`, `centralized_bot`)** và **Peer-to-Peer (`p2p_bot`)**, đồng thời so sánh 6 thuật toán ML trên không gian đặc trưng đồ thị.
+- Có luật nhận diện **Centralized C2 (`c2_server`, `centralized_bot`)** và **Peer-to-Peer (`p2p_bot`)**. Mới chạy trên đồ thị tổng hợp; chưa đánh giá trên CTU-13.
 
 ### STEP 10: Pipeline Kết hợp 3 Tầng & Nghiên cứu Ablation (`models/pipeline.py`, `evaluation/evaluate_pipeline.py`)
 - Kết hợp nối tiếp: **Tầng 1 (Gaussian Anomaly lọc & bắt Zero-Day)** $\to$ **Tầng 2 (Random Forest phân loại chi tiết & khử báo động giả)** $\to$ **Tầng 3 (Host Beaconing & Đồ thị Botnet)**.
-- Kết quả Ablation chứng minh Pipeline 3 tầng đạt **100% Recall** trên cả tấn công Zero-Day chưa từng thấy lẫn Botnet C2 ẩn mình, với tỷ lệ báo động giả **FPR = 0,00%**.
+- Bảng ablation hiện có (100% recall, FPR 0%) được tính trên dữ liệu tổng hợp, trong đó lớp `ZeroDay_Exploit` được sinh để dễ phát hiện. Không dùng làm kết quả.
 
 ### STEP 11–12: Giám sát Thời gian thực trên Kali Linux & Kiểm thử Tổng thể (`realtime/`)
-- Bắt gói trực tiếp qua Scapy hoặc luồng frame Ethernet/IPv4/TCP thô, tái tạo flow thời gian thực, đẩy qua Pipeline 3 tầng, ghi cảnh báo ra `outputs/alerts/alerts.jsonl` (độ trễ trung bình **0,39 ms/flow**) và hỗ trợ chặn IP chủ động qua `iptables`.
+- Bắt gói trực tiếp qua Scapy hoặc luồng frame Ethernet/IPv4/TCP thô, tái tạo flow thời gian thực, đẩy qua Pipeline 3 tầng, ghi cảnh báo ra `outputs/alerts/alerts.jsonl`. Có tuỳ chọn chặn IP qua `iptables`, mặc định tắt và chỉ chạy thử (dry-run). Chưa thử trên mạng lab; kịch bản tấn công hiện là frame tự dựng trong Python.
 
 Chi tiết số liệu, biểu đồ và thảo luận: xem [report.docx](report.docx),
 [eda/data_analysis.ipynb](eda/data_analysis.ipynb) và [models/model_training.ipynb](models/model_training.ipynb).
@@ -262,6 +332,9 @@ Chi tiết số liệu, biểu đồ và thảo luận: xem [report.docx](report
 - Một số đặc trưng mạnh (`init_win_bytes_backward`, cổng đích) phụ thuộc môi trường lab;
   STEP 10 sẽ đánh giá bằng ablation.
 - Heuristic beaconing chưa phát hiện được Bot của CIC-IDS-2017.
+- Phát hiện bất thường mức flow (STEP 6) bỏ sót gần hết Web Attack và PortScan ở FPR 1%.
+- Phân loại mức flow (STEP 7) không phát hiện được Bot giai đoạn cuối, vì flow của nó trùng với flow CIC gán BENIGN.
+- Chạy test hiện ghi đè `outputs/botnet_graph/*` và `saved_models/*.joblib` (cần sửa ở STEP 12).
 
 ## Tài liệu tham khảo
 
