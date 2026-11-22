@@ -1,0 +1,48 @@
+# ---------------------------------------------------------------
+# Mô hình đã huấn luyện: file lớn (Random Forest tới ~67 MB),
+# tái tạo được bằng cách chạy lại notebook trên Kaggle
+# ---------------------------------------------------------------
+nids_results/models/
+*.joblib
+*.keras
+*.h5
+*.pkl
+*_best.keras
+
+# Gói kết quả tải về từ Kaggle
+nids_results.zip
+*.zip
+
+# Dữ liệu thô (chỉ có trên Kaggle)
+data/
+*.csv
+!nids_results/results/*.csv
+*.parquet
+*.pcap
+
+# ---------------------------------------------------------------
+# Python / Jupyter
+# ---------------------------------------------------------------
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.virtual_documents/
+.venv/
+venv/
+env/
+
+# ---------------------------------------------------------------
+# Office: file tạm khi đang mở docx/pptx
+# ---------------------------------------------------------------
+~$*
+*.tmp
+
+# ---------------------------------------------------------------
+# Hệ điều hành và công cụ
+# ---------------------------------------------------------------
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+.claude/settings.local.json

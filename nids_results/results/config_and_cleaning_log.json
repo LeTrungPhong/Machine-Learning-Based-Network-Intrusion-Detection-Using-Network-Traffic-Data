@@ -1,0 +1,244 @@
+{
+  "CONFIG": {
+    "DATASETS": [
+      "UNSW-NB15",
+      "CIC-IDS2017"
+    ],
+    "UNSW_PREFERRED_DIR": "unsw-nb15-eda",
+    "CIC_PREFERRED_DIR": "MachineLearningCVE",
+    "CIC_SAMPLE_FRAC": 0.5,
+    "CIC_MIN_PER_CLASS": 5000,
+    "EDA_SAMPLE": 200000,
+    "CORR_THRESHOLD": 0.95,
+    "MIN_CAT_FREQ": 0.005,
+    "MAX_CATS": 20,
+    "VAL_SIZE": 0.15,
+    "RF_TUNE": true,
+    "RF_TUNE_SUBSET": 40000,
+    "RF_TUNE_ITER": 8,
+    "DL_EPOCHS": 30,
+    "DL_BATCH": 1024,
+    "DL_PATIENCE": 5,
+    "RUN_SHAP": true,
+    "SHAP_SAMPLES": 200,
+    "SHAP_TREES": 25
+  },
+  "CLEAN_LOG": {
+    "UNSW-NB15": {
+      "train": {
+        "rows_in": 175341,
+        "dropped_id_cols": [],
+        "inf_to_nan": 0,
+        "nan_rows_dropped": 0,
+        "duplicates_dropped": 69617,
+        "rows_out": 105724
+      },
+      "test": {
+        "rows_in": 82332,
+        "dropped_id_cols": [],
+        "inf_to_nan": 0,
+        "nan_rows_dropped": 0,
+        "duplicates_dropped": 26809,
+        "rows_out": 55523
+      },
+      "train_rows_overlap_with_test_removed": 1765
+    },
+    "CIC-IDS2017": {
+      "full": {
+        "rows_in": 2830743,
+        "dropped_id_cols": [
+          "Label_orig"
+        ],
+        "inf_to_nan": 4376,
+        "nan_rows_dropped": 2867,
+        "duplicates_dropped": 329691,
+        "rows_out": 2498185
+      },
+      "sample_frac": 0.5,
+      "rows_after_sampling": 1251586,
+      "dropped_rare_classes": []
+    }
+  },
+  "FEATURES": {
+    "UNSW-NB15": [
+      "dur",
+      "rate",
+      "sttl",
+      "dttl",
+      "sjit",
+      "djit",
+      "swin",
+      "synack",
+      "ackdat",
+      "trans_depth",
+      "ct_srv_src",
+      "ct_state_ttl",
+      "ct_dst_ltm",
+      "ct_src_dport_ltm",
+      "ct_dst_sport_ltm",
+      "ct_dst_src_ltm",
+      "ct_ftp_cmd",
+      "ct_flw_http_mthd",
+      "ct_src_ltm",
+      "ct_srv_dst",
+      "is_sm_ips_ports",
+      "smean_log1p",
+      "dmean_log1p",
+      "spkts_log1p",
+      "dpkts_log1p",
+      "sloss_log1p",
+      "dloss_log1p",
+      "response_body_len_log1p",
+      "sinpkt_log1p",
+      "dinpkt_log1p",
+      "sload_log1p",
+      "dload_log1p",
+      "proto=tcp",
+      "proto=udp",
+      "proto=others",
+      "proto=ospf",
+      "proto=other",
+      "service=-",
+      "service=http",
+      "service=dns",
+      "service=smtp",
+      "service=ftp-data",
+      "service=ftp",
+      "service=ssh",
+      "service=pop3",
+      "service=other",
+      "state=FIN",
+      "state=INT",
+      "state=CON",
+      "state=REQ",
+      "state=other"
+    ],
+    "CIC-IDS2017": [
+      "Destination Port",
+      "Flow Duration",
+      "Total Fwd Packets",
+      "Total Length of Fwd Packets",
+      "Fwd Packet Length Max",
+      "Fwd Packet Length Min",
+      "Fwd Packet Length Mean",
+      "Bwd Packet Length Max",
+      "Bwd Packet Length Min",
+      "Flow Bytes/s",
+      "Flow Packets/s",
+      "Flow IAT Mean",
+      "Flow IAT Std",
+      "Flow IAT Max",
+      "Flow IAT Min",
+      "Fwd IAT Mean",
+      "Fwd IAT Std",
+      "Fwd IAT Min",
+      "Bwd IAT Total",
+      "Bwd IAT Mean",
+      "Bwd IAT Std",
+      "Bwd IAT Max",
+      "Bwd IAT Min",
+      "Fwd PSH Flags",
+      "Fwd URG Flags",
+      "Fwd Header Length",
+      "Bwd Packets/s",
+      "Min Packet Length",
+      "Max Packet Length",
+      "Packet Length Mean",
+      "Packet Length Variance",
+      "FIN Flag Count",
+      "RST Flag Count",
+      "PSH Flag Count",
+      "ACK Flag Count",
+      "URG Flag Count",
+      "Down/Up Ratio",
+      "Init_Win_bytes_forward",
+      "Init_Win_bytes_backward",
+      "act_data_pkt_fwd",
+      "Active Mean",
+      "Active Std",
+      "Active Max",
+      "Active Min",
+      "Idle Std"
+    ]
+  },
+  "CLASSES": {
+    "UNSW-NB15": {
+      "binary": [
+        "Normal",
+        "Attack"
+      ],
+      "multi": [
+        "Analysis",
+        "Backdoor",
+        "DoS",
+        "Exploits",
+        "Fuzzers",
+        "Generic",
+        "Normal",
+        "Reconnaissance",
+        "Shellcode",
+        "Worms"
+      ]
+    },
+    "CIC-IDS2017": {
+      "binary": [
+        "Normal",
+        "Attack"
+      ],
+      "multi": [
+        "Benign",
+        "Bot",
+        "Brute Force",
+        "DDoS",
+        "DoS",
+        "Heartbleed",
+        "Infiltration",
+        "PortScan",
+        "Web Attack"
+      ]
+    }
+  },
+  "RF_PARAMS": {
+    "UNSW-NB15 | binary": {
+      "n_estimators": 200,
+      "max_features": 0.3,
+      "min_samples_leaf": 1,
+      "class_weight": "balanced",
+      "n_jobs": -1,
+      "random_state": 42,
+      "min_samples_split": 5,
+      "max_depth": 20,
+      "criterion": "entropy"
+    },
+    "UNSW-NB15 | multi": {
+      "n_estimators": 200,
+      "max_features": 0.3,
+      "min_samples_leaf": 1,
+      "class_weight": "balanced",
+      "n_jobs": -1,
+      "random_state": 42,
+      "min_samples_split": 5,
+      "max_depth": 20,
+      "criterion": "entropy"
+    },
+    "CIC-IDS2017 | binary": {
+      "n_estimators": 200,
+      "max_features": "sqrt",
+      "min_samples_leaf": 2,
+      "class_weight": "balanced",
+      "n_jobs": -1,
+      "random_state": 42
+    },
+    "CIC-IDS2017 | multi": {
+      "n_estimators": 200,
+      "max_features": 0.3,
+      "min_samples_leaf": 1,
+      "class_weight": "balanced_subsample",
+      "n_jobs": -1,
+      "random_state": 42,
+      "min_samples_split": 5,
+      "max_depth": 40,
+      "criterion": "entropy"
+    }
+  }
+}

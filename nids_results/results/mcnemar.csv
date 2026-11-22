@@ -1,0 +1,5 @@
+Dataset,Task,RF đúng / DL sai (n01),RF sai / DL đúng (n10),Chi2,p-value,Ý nghĩa (p<0.05),Mô hình tốt hơn
+UNSW-NB15,binary,1678,1605,1.579,0.20889851508017757,False,RandomForest
+UNSW-NB15,multi,2178,2469,18.098,2.0985504949647423e-05,True,CNN-BiLSTM
+CIC-IDS2017,binary,135,67,22.223,2.4277718630137943e-06,True,RandomForest
+CIC-IDS2017,multi,294,86,112.761,2.4347520182933806e-26,True,RandomForest
