@@ -11,7 +11,7 @@ import streamlit as st
 import config
 from core.model_loader import load_artifacts
 from core.predictor import Predictor
-from views import common, page_compare, page_csv, page_flow, page_live, page_pcap
+from views import common, page_compare, page_csv, page_flow, page_live, page_pcap  # noqa: F401 (page_pcap đang ẩn)
 
 st.set_page_config(page_title='NIDS Demo – CIC-IDS2017', page_icon='🛡️', layout='wide')
 
@@ -60,7 +60,8 @@ pages = [
     st.Page(page_csv.render, title='Phân tích file CSV', icon='📄', url_path='csv', default=True),
     st.Page(page_flow.render, title='Kiểm tra từng luồng', icon='🔎', url_path='flow'),
     st.Page(page_compare.render, title='So sánh mô hình', icon='⚖️', url_path='compare'),
-    st.Page(page_pcap.render, title='Phân tích PCAP (cấp 2)', icon='📦', url_path='pcap'),
-    st.Page(page_live.render, title='Giám sát trực tiếp (cấp 3)', icon='📡', url_path='live'),
+    # Trang PCAP (views/page_pcap.py) đang ẩn; bỏ comment dòng dưới để hiện lại.
+    # st.Page(page_pcap.render, title='Phân tích PCAP', icon='📦', url_path='pcap'),
+    st.Page(page_live.render, title='Giám sát trực tiếp', icon='📡', url_path='live'),
 ]
 st.navigation(pages).run()

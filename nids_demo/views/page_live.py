@@ -25,6 +25,7 @@ from core.alerting import (ALERT_COLUMNS, AlertAggregator, append_alert_log, loa
 from views import common
 
 S = st.session_state
+FLOW_INFO_COLS = ['Src IP', 'Src Port', 'Dst IP', 'Dst Port', 'Protocol']
 MODES = {
     'sim': 'Mô phỏng (phát lại dữ liệu mẫu)',
     'capture': 'Bắt lưu lượng thật của máy',
@@ -41,6 +42,7 @@ def _reset_state(mode):
     S.live_total = {'flows': 0, 'suspicious': 0, 'whitelisted': 0, 'alerts': 0}
     S.live_types = pd.Series(dtype=int)          # loại tấn công của các luồng nghi ngờ
     S.live_ip_alerts = pd.Series(dtype=int)      # số cảnh báo theo IP nguồn
+    S.live_flows = pd.DataFrame()                # mọi luồng đã xử lý (mới nhất ở đầu), tối đa LIVE_HISTORY_LIMIT
     S.live_agg = AlertAggregator()
     S.live_sim = None
     S.live_capture = None
@@ -104,6 +106,17 @@ def _tick_once(final=False):
         S.live_total['whitelisted'] += int((susp & wl).sum())
         susp &= ~wl
         n_susp = int(susp.sum())
+        flows = info[[col for col in FLOW_INFO_COLS if col in info.columns]].copy()
+        if 'Dst Port' in flows.columns:
+            flows['Dst Port'] = pd.to_numeric(flows['Dst Port'], errors='coerce').astype('Int64')
+        flows.insert(0, 'Thời điểm', datetime.fromtimestamp(now).strftime('%H:%M:%S'))
+        flows['Dự đoán'] = pred.labels
+        flows['Độ tin cậy'] = np.round(pred.confidence, 4)
+        flows['Trạng thái'] = np.select([susp, wl & pred.is_attack, pred.is_attack],
+                                        ['Nghi ngờ', 'Whitelist', 'Attack (tin cậy thấp)'], 'Normal')
+        if y is not None:
+            flows['Nhãn thật'] = np.asarray(y)
+        S.live_flows = pd.concat([flows.iloc[::-1], S.live_flows], ignore_index=True).head(config.LIVE_HISTORY_LIMIT)
         agg = S.live_agg
         agg.window_s, agg.min_flows = float(S.live_window), int(S.live_min_flows)
         alerts = agg.add(info, pred.labels, pred.confidence, susp, model_name=model_name, mode=MODES[S.live_mode])
@@ -172,13 +185,39 @@ def _dashboard():
             ty = S.live_types.sort_values(ascending=False).astype(int).rename('Luồng nghi ngờ').rename_axis('Loại')
             st.dataframe(ty.to_frame(), width='stretch', height=260)
 
-    st.subheader('Cảnh báo mới nhất')
-    al = S.live_alerts
-    if len(al):
-        st.dataframe(al.head(50), width='stretch', hide_index=True)
-    else:
-        st.caption(f'Chưa có cảnh báo (cần ≥ {S.live_min_flows} luồng nghi ngờ từ cùng một IP nguồn trong '
-                   f'{S.live_window} giây, độ tin cậy ≥ {common.ctx().threshold:.2f}).')
+    al, fl = S.live_alerts, S.get('live_flows', pd.DataFrame())
+    # Tên tab phải cố định: nếu đổi (vd kèm số đếm) Streamlit tạo lại tab và nhảy về tab đầu sau mỗi lần làm mới
+    tab_alert, tab_all = st.tabs(['🚨 Cảnh báo mới nhất', '📋 Tất cả luồng'])
+    with tab_alert:
+        if len(al):
+            st.caption(f'{len(al):,} cảnh báo trong phiên – hiện 50 cảnh báo mới nhất.')
+            st.dataframe(al.head(50), width='stretch', hide_index=True)
+        else:
+            st.caption(f'Chưa có cảnh báo (cần ≥ {S.live_min_flows} luồng nghi ngờ từ cùng một IP nguồn trong '
+                       f'{S.live_window} giây, độ tin cậy ≥ {common.ctx().threshold:.2f}).')
+    with tab_all:
+        if not len(fl):
+            st.caption('Chưa có luồng nào.')
+        else:
+            f1, f2 = st.columns([3, 2])
+            states = ['Nghi ngờ', 'Whitelist', 'Attack (tin cậy thấp)', 'Normal']
+            pick = f1.multiselect('Lọc theo trạng thái', states, default=states, key='live_flow_filter')
+            ip = f2.text_input('Lọc theo IP (nguồn hoặc đích)', key='live_flow_ip').strip()
+            view = fl[fl['Trạng thái'].isin(pick)]
+            if ip:
+                m = np.zeros(len(view), bool)
+                for col in ('Src IP', 'Dst IP'):
+                    if col in view.columns:
+                        m |= view[col].astype(str).str.contains(ip, regex=False).to_numpy()
+                view = view[m]
+            st.caption(f'{len(view):,} / {len(fl):,} luồng (giữ tối đa {config.LIVE_HISTORY_LIMIT:,} luồng gần nhất, '
+                       'mới nhất ở trên).')
+            colors = {'Nghi ngờ': '#FEE2E2', 'Whitelist': '#E0E7FF', 'Attack (tin cậy thấp)': '#FEF3C7', 'Normal': ''}
+            shown = view.head(config.MAX_STYLED_ROWS)
+            styled = shown.style.apply(lambda r: [f'background-color: {colors[r["Trạng thái"]]}'] * len(r), axis=1)
+            st.dataframe(styled, width='stretch', hide_index=True, height=380)
+            st.download_button('Tải tất cả luồng (CSV)', fl.to_csv(index=False).encode('utf-8-sig'),
+                               file_name='live_flows.csv', mime='text/csv', key='live_flows_dl')
 
     cap = S.get('live_capture')
     if cap is not None:

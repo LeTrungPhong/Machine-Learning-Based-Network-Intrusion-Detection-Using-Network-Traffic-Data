@@ -101,8 +101,9 @@ Mở http://localhost:8501. Lần đầu nạp mô hình mất khoảng 10–20 
 | Phân tích file CSV | Upload CSV / dữ liệu mẫu, báo cáo khớp cột, KPI, bảng tô màu, phân bố tấn công, lọc, tải CSV; nếu có cột `Label`: accuracy, F1-macro, DR, FAR, confusion matrix, classification report |
 | Kiểm tra từng luồng | Chọn ngẫu nhiên 1 luồng (lọc theo nhãn thật), so sánh dự đoán 2 mô hình, biểu đồ xác suất, đặc trưng quan trọng của RF |
 | So sánh mô hình | Metric + thời gian suy luận của 2 mô hình, tỉ lệ đồng thuận, bảng chéo dự đoán, F1 theo lớp |
-| Phân tích PCAP | Cấp 2 |
-| Giám sát trực tiếp | Cấp 3 |
+| Giám sát trực tiếp | Mô phỏng, bắt lưu lượng thật, thu thập BENIGN (xem mục Cấp 3) |
+
+Trang "Phân tích PCAP" (`views/page_pcap.py`) đang **ẩn** khỏi menu; muốn hiện lại, bỏ comment dòng `st.Page(page_pcap...)` trong `app.py`.
 
 ### 5. Kiểm thử
 
@@ -121,7 +122,7 @@ Mở http://localhost:8501. Lần đầu nạp mô hình mất khoảng 10–20 
 
 ---
 
-## Cấp 2 – Phân tích PCAP
+## Cấp 2 – Phân tích PCAP (trang đang ẩn)
 
 Cài **một** trong hai backend rồi mở trang "Phân tích PCAP". Trên Windows cần **Npcap** (https://npcap.com).
 
