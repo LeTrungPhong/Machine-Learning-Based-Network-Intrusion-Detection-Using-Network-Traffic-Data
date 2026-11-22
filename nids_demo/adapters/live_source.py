@@ -9,6 +9,7 @@ FlowSimulator: chế độ mô phỏng – phát lại một CSV mẫu từng đ
 import io
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 
 import config
@@ -78,7 +79,9 @@ class LiveFolderSource(FlowSource):
 class FlowSimulator:
     """Phát lại sample CSV vào WATCH_DIR theo từng đợt để demo khi chưa có lab thật."""
 
-    def __init__(self, sample_df, watch_dir=None, chunk_rows=None, file_name=None, seed=42):
+    def __init__(self, sample_df, watch_dir=None, chunk_rows=None, file_name=None, seed=42, synth_ips=False):
+        if synth_ips:
+            sample_df = add_synthetic_ips(sample_df, seed=seed)
         self.df = sample_df.sample(frac=1.0, random_state=seed).reset_index(drop=True)
         self.watch_dir = Path(watch_dir or config.WATCH_DIR)
         self.chunk = chunk_rows or config.SIM_CHUNK_ROWS
@@ -99,3 +102,26 @@ class FlowSimulator:
         part.to_csv(self.path, mode='a', header=False, index=False)
         self.pos += len(part)
         return len(part)
+
+
+def add_synthetic_ips(df, seed=42, subnet='192.168.56'):
+    """Thêm Src IP / Dst IP giả lập cho dữ liệu mẫu (MachineLearningCVE không có cột IP).
+
+    Chỉ dùng cho chế độ Mô phỏng để thử tính năng gom cảnh báo theo IP: luồng BENIGN lấy ngẫu nhiên từ 20 máy
+    trong mạng, mỗi loại tấn công gán cho một "máy tấn công" cố định; IP đích là máy nạn nhân .1.
+    """
+    from core.schema import canon, group_cic_label, normalize_cic_label
+    cols = {canon(c) for c in df.columns}
+    if cols & {'srcip', 'sourceip'}:
+        return df
+    df = df.copy()
+    rng = np.random.default_rng(seed)
+    lab_col = next((c for c in df.columns if canon(c) == 'label'), None)
+    groups = (df[lab_col].map(lambda s: group_cic_label(normalize_cic_label(s))) if lab_col
+              else pd.Series(['Benign'] * len(df), index=df.index))
+    attackers = {g: f'{subnet}.{101 + i}' for i, g in enumerate(sorted(set(groups) - {'Benign'}))}
+    benign_ips = np.array([f'{subnet}.{10 + i}' for i in range(20)])
+    src = np.where(groups == 'Benign', rng.choice(benign_ips, len(df)), groups.map(attackers).fillna(f'{subnet}.100'))
+    df.insert(0, 'Src IP', src)
+    df.insert(1, 'Dst IP', f'{subnet}.1')
+    return df

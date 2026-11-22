@@ -5,3 +5,5 @@ data/
 !data/.gitkeep
 artifacts/*.joblib
 artifacts/*.keras
+artifacts_finetuned/
+tools_ext/

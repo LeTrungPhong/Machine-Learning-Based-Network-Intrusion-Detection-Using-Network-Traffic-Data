@@ -6,6 +6,7 @@ Hỗ trợ 3 kiểu tên cột:
   (b) CICFlowMeter Java 4.0 /  : 'Flow Duration', 'Tot Fwd Pkts', 'Dst Port'
       CSE-CIC-IDS2018
   (c) gói Python `cicflowmeter`: 'flow_duration', 'tot_fwd_pkts', 'dst_port'
+  (d) CICFlowMeter GitHub master : 'Total Fwd Packet', 'FWD Init Win Bytes', 'Packet Length Min'
 
 Cách làm: mọi tên cột được quy về "khóa chuẩn" (chữ thường, bỏ ký tự không phải chữ/số),
 vd 'Flow Byts/s' và 'flow_byts_s' cùng thành 'flowbytss'. Bảng ALIASES ánh xạ khóa chuẩn của
@@ -111,7 +112,27 @@ _CFM4_TO_2017 = {
     'Idle Max': 'Idle Max',
     'Idle Min': 'Idle Min',
 }
-ALIASES = {canon(k): v for k, v in _CFM4_TO_2017.items()}
+# Tên cột của CICFlowMeter bản mã nguồn GitHub (ahlashkari/CICFlowMeter, nhánh master) – bản app tự build
+# trong tools_ext/ để bắt lưu lượng thật. Chỉ liệt kê các tên khác với bảng trên.
+_CFM_GITHUB_TO_2017 = {
+    'Total Fwd Packet': 'Total Fwd Packets',
+    'Total Bwd packets': 'Total Backward Packets',
+    'Total Length of Fwd Packet': 'Total Length of Fwd Packets',
+    'Total Length of Bwd Packet': 'Total Length of Bwd Packets',
+    'Packet Length Min': 'Min Packet Length',
+    'Packet Length Max': 'Max Packet Length',
+    'FWD Init Win Bytes': 'Init_Win_bytes_forward',
+    'Bwd Init Win Bytes': 'Init_Win_bytes_backward',
+    'Fwd Segment Size Avg': 'Avg Fwd Segment Size',
+    'Bwd Segment Size Avg': 'Avg Bwd Segment Size',
+    'Fwd Bytes/Bulk Avg': 'Fwd Avg Bytes/Bulk',
+    'Fwd Packet/Bulk Avg': 'Fwd Avg Packets/Bulk',
+    'Fwd Bulk Rate Avg': 'Fwd Avg Bulk Rate',
+    'Bwd Bytes/Bulk Avg': 'Bwd Avg Bytes/Bulk',
+    'Bwd Packet/Bulk Avg': 'Bwd Avg Packets/Bulk',
+    'Bwd Bulk Rate Avg': 'Bwd Avg Bulk Rate',
+}
+ALIASES = {canon(k): v for k, v in {**_CFM4_TO_2017, **_CFM_GITHUB_TO_2017}.items()}
 
 # Cột thông tin: giữ lại để hiển thị, KHÔNG đưa vào mô hình (khóa chuẩn -> tên hiển thị)
 INFO_COLUMNS = {
