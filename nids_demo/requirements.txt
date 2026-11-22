@@ -1,0 +1,18 @@
+# Phiên bản pin theo môi trường huấn luyện trên Kaggle (output cell 1.1 của notebook).
+# Lệch phiên bản scikit-learn / keras có thể khiến không load được model .joblib / .keras.
+numpy==2.1.3
+pandas==2.3.3
+scikit-learn==1.6.1
+joblib>=1.4
+tensorflow==2.21.0
+keras==3.13.2
+
+# Ứng dụng
+streamlit>=1.40
+plotly>=5.24
+
+# Kiểm thử
+pytest>=8.0
+
+# Cấp 2 (tùy chọn): trích xuất luồng từ PCAP bằng gói Python
+# cicflowmeter

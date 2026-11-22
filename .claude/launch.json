@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "nids-demo-uitest",
+      "runtimeExecutable": "cmd",
+      "runtimeArgs": ["/c", "cd /d E:\\HK9\\ATTT_CK\\nids_demo && set NIDS_DATA_DIR=C:\\Users\\DELL\\AppData\\Local\\Temp\\claude\\f5d33dc87faecb19\\a7b581b6-f6f2-4c74-ac6b-5a697e2b2fc9\\scratchpad\\uitest&& .venv\\Scripts\\streamlit.exe run app.py --server.port 8503 --server.headless true"],
+      "port": 8503
+    },
+    {
+      "name": "nids-demo",
+      "runtimeExecutable": "cmd",
+      "runtimeArgs": ["/c", "cd /d E:\\HK9\\ATTT_CK\\nids_demo && .venv\\Scripts\\streamlit.exe run app.py --server.port 8502 --server.headless true"],
+      "port": 8502
+    }
+  ]
+}
