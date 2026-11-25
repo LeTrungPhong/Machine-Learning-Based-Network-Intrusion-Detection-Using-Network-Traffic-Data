@@ -172,13 +172,20 @@ Trang "Giám sát trực tiếp" có 4 chế độ:
 ```
 dumpcap -i <card> -F pcap -b duration:30 -w data/capture/<phiên>/live.pcap      (Wireshark + Npcap)
    └─ mỗi 30 s đóng một file  live_00001_<thời điểm>.pcap
-adapters/live_capture.py (luồng nền): file đã đóng → cfm.bat <pcap> <tmp>       (CICFlowMeter Java 4.0)
+adapters/live_capture.py (luồng nền): file đã đóng → editcap -F pcap (nano→micro) → cfm.bat <pcap> <tmp>
    └─ <pcap>_Flow.csv → os.replace → data/live/live_<số>_<thời điểm>.csv   (pcap tạm bị xóa)
 adapters/live_source.py: đọc các dòng mới → mô hình → giảm báo nhầm → dashboard + data/alerts.csv
 ```
 
 CICFlowMeter bản Java chỉ bắt realtime qua giao diện đồ họa, lệnh `cfm` chỉ xử lý file pcap – nên app cắt pcap
 theo chu kỳ rồi gọi `cfm`. Bản Java được ưu tiên vì là công cụ sinh ra CIC-IDS2017 (cùng cách tính đặc trưng).
+
+> **Lưu ý định dạng pcap:** dumpcap + Npcap ghi pcap độ phân giải **nanosecond** (magic `a1b23c4d`), nhưng
+> CICFlowMeter chỉ đọc pcap **microsecond**. Vì vậy app chạy `editcap -F pcap` (đi kèm Wireshark) để chuyển đổi
+> trước khi gọi `cfm`; thiếu editcap thì luồng bắt thật sẽ không được xử lý. Đường dẫn khác mặc định → biến `NIDS_EDITCAP`.
+>
+> **Phát hiện DoS:** với tấn công DoS/flood HTTP, **CNN-BiLSTM** nhạy hơn Random Forest rõ rệt (thử nghiệm ApacheBench
+> vào cổng 80: CNN-BiLSTM gán ~40% luồng là DoS, phần lớn tin cậy ≥ 0,9; RF chỉ ~13%). Nên chọn CNN-BiLSTM khi demo DoS.
 
 ### Cài đặt
 
@@ -289,6 +296,7 @@ Chỉ dùng bản mới khi tỉ lệ báo nhầm giảm mà DR/F1-macro trên t
 | `WATCH_DIR` / `NIDS_WATCH_DIR` | `data/live` | Thư mục giám sát |
 | `REFRESH_SECONDS`, `SIM_CHUNK_ROWS` | 3, 50 | Chu kỳ làm mới, số dòng mỗi đợt mô phỏng |
 | `DUMPCAP_BIN` / `NIDS_DUMPCAP` | `C:\Program Files\Wireshark\dumpcap.exe` | dumpcap để bắt gói |
+| `EDITCAP_BIN` / `NIDS_EDITCAP` | `C:\Program Files\Wireshark\editcap.exe` | editcap: chuyển pcap nano→micro cho CICFlowMeter |
 | `CAPTURE_ROTATE_SECONDS` / `NIDS_CAPTURE_ROTATE` | 30 | Chu kỳ cắt file pcap (ảnh hưởng độ trễ) |
 | `CAPTURE_KEEP_PCAP` | `False` | Giữ lại file pcap sau khi xử lý |
 | `AGG_WINDOW_SECONDS`, `AGG_MIN_FLOWS` | 60, 5 | Gom cảnh báo theo IP nguồn |

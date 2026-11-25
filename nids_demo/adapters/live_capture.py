@@ -80,6 +80,19 @@ def dumpcap_path():
     return shutil.which('dumpcap')
 
 
+def editcap_path():
+    """editcap (đi kèm Wireshark) – dùng để chuyển pcap nanosecond -> microsecond cho CICFlowMeter."""
+    p = Path(config.EDITCAP_BIN)
+    if p.exists():
+        return str(p)
+    dc = dumpcap_path()
+    if dc:                                   # editcap nằm cùng thư mục với dumpcap
+        cand = Path(dc).with_name('editcap.exe' if sys.platform == 'win32' else 'editcap')
+        if cand.exists():
+            return str(cand)
+    return shutil.which('editcap')
+
+
 def capture_status():
     """Trạng thái các thành phần cần cho bắt lưu lượng thật (hiển thị trên UI)."""
     return {
@@ -251,6 +264,25 @@ class CaptureSession:
             return self.flow_cmd(pcap, out_dir)
         return java_backend_cmd() + [str(pcap), str(out_dir)]
 
+    def _to_microsecond(self, pcap, tmp):
+        """CICFlowMeter chỉ nhận pcap microsecond; dumpcap+Npcap ghi pcap nanosecond (magic a1b23c4d),
+        nên chuyển bằng editcap trước. Chỉ áp dụng cho backend Java thật (bỏ qua khi test có flow_cmd)."""
+        if self.flow_cmd is not None:
+            return pcap
+        ec = editcap_path()
+        if not ec:
+            return pcap                                  # không có editcap -> thử trực tiếp (có thể lỗi)
+        micro = tmp / f'{pcap.stem}_us.pcap'
+        try:
+            r = subprocess.run([ec, '-F', 'pcap', str(pcap), str(micro)], capture_output=True, text=True,
+                               timeout=config.PCAP_TIMEOUT_S, creationflags=_NO_WINDOW)
+            if micro.exists() and micro.stat().st_size > 24:
+                return micro
+            self._log(f'editcap không chuyển được {pcap.name}: {((r.stdout or "") + (r.stderr or "")).strip()[-200:]}')
+        except Exception as e:
+            self._log(f'editcap lỗi với {pcap.name}: {e}')
+        return pcap
+
     def _process_ready(self, final=False):
         for pcap in self.pending_files(final):
             self._done.add(pcap)
@@ -259,7 +291,8 @@ class CaptureSession:
                 continue
             tmp = self.capture_dir / f'out_{pcap.stem}'
             tmp.mkdir(exist_ok=True)
-            proc = subprocess.run(self._flow_cmd(pcap, tmp), capture_output=True, text=True,
+            in_pcap = self._to_microsecond(pcap, tmp)
+            proc = subprocess.run(self._flow_cmd(in_pcap, tmp), capture_output=True, text=True,
                                   timeout=config.PCAP_TIMEOUT_S, creationflags=_NO_WINDOW)
             csvs = sorted(tmp.glob('*.csv'))
             if proc.returncode != 0 or not csvs:

@@ -97,6 +97,8 @@ UI_NOTE = ('Kết quả trên lưu lượng ngoài CICIDS2017 có thể kém hơ
 # Hướng Java: dumpcap (Wireshark, dùng Npcap) cắt pcap mỗi CAPTURE_ROTATE_SECONDS giây -> CICFlowMeter Java (cfm)
 # chuyển từng file đã cắt xong thành CSV -> chuyển vào WATCH_DIR -> LiveFolderSource đọc dòng mới.
 DUMPCAP_BIN = os.environ.get('NIDS_DUMPCAP', r'C:\Program Files\Wireshark\dumpcap.exe')
+# editcap (đi kèm Wireshark): chuyển pcap nanosecond của dumpcap -> microsecond cho CICFlowMeter đọc được
+EDITCAP_BIN = os.environ.get('NIDS_EDITCAP', r'C:\Program Files\Wireshark\editcap.exe')
 CAPTURE_ROTATE_SECONDS = int(os.environ.get('NIDS_CAPTURE_ROTATE', 30))   # độ trễ tối thiểu ~ giá trị này + flow timeout
 CAPTURE_DIR = DATA_DIR / 'capture'           # file pcap tạm (xóa sau khi xử lý nếu CAPTURE_KEEP_PCAP=False)
 CAPTURE_KEEP_PCAP = False
